@@ -13,6 +13,8 @@ import (
 	"github.com/observiply/terraform-provider-oncall/internal/provider"
 )
 
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.25.0 generate
+
 // version is overwritten at build time via:
 //
 //	go build -ldflags "-X main.version=$(VERSION)"

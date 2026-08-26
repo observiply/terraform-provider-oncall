@@ -55,6 +55,24 @@ jobs:
       - name: Compare against vendored copy
         run: diff -u internal/client/swagger.json /tmp/oncall-swagger.json
 
+  docs-drift:
+    runs-on: ubuntu-latest
+    # tfplugindocs generates docs/ from schema descriptions + examples/. Fail
+    # the build if someone changed a schema description or an example and
+    # forgot to regenerate (see tfprovider-10-release.md in oncall's plan/).
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: go generate (tfplugindocs)
+        run: go generate ./...
+
+      - name: Fail if docs/ is stale
+        run: git diff --exit-code -- docs/
+
   tofu-fmt:
     # observiply's HCL tooling is OpenTofu, not Terraform (see auth/tofu/) —
     # `fmt` is syntax-compatible either way, but use the CLI actually in use.
