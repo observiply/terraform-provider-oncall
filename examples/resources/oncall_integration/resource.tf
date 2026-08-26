@@ -1,6 +1,6 @@
 resource "oncall_integration" "slack" {
   name          = "Slack #incidents"
-  kind          = "webhook"
+  kind          = "outgoing_webhook"
   owner_team_id = data.oncall_team.platform.id
 
   url         = "https://hooks.slack.com/services/T000/B000/XXXX"

@@ -113,7 +113,7 @@ resource "oncall_schedule_notification_policy" "primary" {
 
 resource "oncall_integration" "webhook" {
   name          = "Ops webhook"
-  kind          = "webhook"
+  kind          = "outgoing_webhook"
   owner_team_id = data.oncall_team.platform.id
   team_ids      = [data.oncall_team.platform.id, data.oncall_team.payments.id]
 

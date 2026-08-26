@@ -371,8 +371,7 @@
                         "type": "string"
                     },
                     "rotation_length": {
-                        "example": "P1W",
-                        "type": "string"
+                        "$ref": "#/components/schemas/pginterval.Interval"
                     },
                     "schedule_id": {
                         "type": "string"
@@ -408,8 +407,7 @@
                         "type": "string"
                     },
                     "rotation_length": {
-                        "example": "P1W",
-                        "type": "string"
+                        "$ref": "#/components/schemas/pginterval.Interval"
                     },
                     "schedule_id": {
                         "type": "string"
@@ -2030,6 +2028,23 @@
                     },
                     "issuer": {
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "pginterval.Interval": {
+                "properties": {
+                    "days": {
+                        "description": "calendar days",
+                        "type": "integer"
+                    },
+                    "micros": {
+                        "description": "sub-day absolute microseconds",
+                        "type": "integer"
+                    },
+                    "months": {
+                        "description": "calendar months (years*12 + months)",
+                        "type": "integer"
                     }
                 },
                 "type": "object"

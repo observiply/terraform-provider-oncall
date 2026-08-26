@@ -283,7 +283,7 @@ func (r *triggerTargetsResource) putTargets(ctx context.Context, triggerID strin
 	if err != nil {
 		return nil, diagsFromError("Unable to encode trigger targets request", err)
 	}
-	putResp, err := r.client.PutAdminTriggersIdTargetsWithResponse(ctx, triggerID, client.PutAdminTriggersIdTargetsJSONRequestBody(body))
+	putResp, err := r.client.PutAdminTriggersIdTargetsWithBodyWithResponse(ctx, triggerID, "application/json", body)
 	if err != nil {
 		return nil, diagsFromError("Unable to set trigger targets", err)
 	}

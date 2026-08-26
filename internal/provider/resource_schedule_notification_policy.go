@@ -279,7 +279,7 @@ func (r *scheduleNotificationPolicyResource) putSteps(ctx context.Context, sched
 	if err != nil {
 		return nil, diagsFromError("Unable to encode notification policy request", err)
 	}
-	putResp, err := r.client.PutAdminSchedulesIdNotificationPolicyWithResponse(ctx, scheduleID, client.PutAdminSchedulesIdNotificationPolicyJSONRequestBody(body))
+	putResp, err := r.client.PutAdminSchedulesIdNotificationPolicyWithBodyWithResponse(ctx, scheduleID, "application/json", body)
 	if err != nil {
 		return nil, diagsFromError("Unable to set schedule notification policy", err)
 	}

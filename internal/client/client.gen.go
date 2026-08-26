@@ -191,27 +191,27 @@ type AdminLayerBody struct {
 
 // AdminLayerResp defines model for admin.layerResp.
 type AdminLayerResp struct {
-	EndAt          *string `json:"end_at,omitempty"`
-	HandoffAt      *string `json:"handoff_at,omitempty"`
-	Id             *string `json:"id,omitempty"`
-	Name           *string `json:"name,omitempty"`
-	RotationLength *string `json:"rotation_length,omitempty"`
-	ScheduleId     *string `json:"schedule_id,omitempty"`
-	StartAt        *string `json:"start_at,omitempty"`
-	Tier           *int    `json:"tier,omitempty"`
+	EndAt          *string             `json:"end_at,omitempty"`
+	HandoffAt      *string             `json:"handoff_at,omitempty"`
+	Id             *string             `json:"id,omitempty"`
+	Name           *string             `json:"name,omitempty"`
+	RotationLength *PgintervalInterval `json:"rotation_length,omitempty"`
+	ScheduleId     *string             `json:"schedule_id,omitempty"`
+	StartAt        *string             `json:"start_at,omitempty"`
+	Tier           *int                `json:"tier,omitempty"`
 }
 
 // AdminLayerWithMembers defines model for admin.layerWithMembers.
 type AdminLayerWithMembers struct {
-	EndAt          *string            `json:"end_at,omitempty"`
-	HandoffAt      *string            `json:"handoff_at,omitempty"`
-	Id             *string            `json:"id,omitempty"`
-	Members        *[]AdminMemberResp `json:"members,omitempty"`
-	Name           *string            `json:"name,omitempty"`
-	RotationLength *string            `json:"rotation_length,omitempty"`
-	ScheduleId     *string            `json:"schedule_id,omitempty"`
-	StartAt        *string            `json:"start_at,omitempty"`
-	Tier           *int               `json:"tier,omitempty"`
+	EndAt          *string             `json:"end_at,omitempty"`
+	HandoffAt      *string             `json:"handoff_at,omitempty"`
+	Id             *string             `json:"id,omitempty"`
+	Members        *[]AdminMemberResp  `json:"members,omitempty"`
+	Name           *string             `json:"name,omitempty"`
+	RotationLength *PgintervalInterval `json:"rotation_length,omitempty"`
+	ScheduleId     *string             `json:"schedule_id,omitempty"`
+	StartAt        *string             `json:"start_at,omitempty"`
+	Tier           *int                `json:"tier,omitempty"`
 }
 
 // AdminMeResponse defines model for admin.meResponse.
@@ -901,6 +901,18 @@ type MainMobileConfigResponse struct {
 	ApiBase  *string `json:"api_base,omitempty"`
 	ClientId *string `json:"client_id,omitempty"`
 	Issuer   *string `json:"issuer,omitempty"`
+}
+
+// PgintervalInterval defines model for pginterval.Interval.
+type PgintervalInterval struct {
+	// Days calendar days
+	Days *int `json:"days,omitempty"`
+
+	// Micros sub-day absolute microseconds
+	Micros *int `json:"micros,omitempty"`
+
+	// Months calendar months (years*12 + months)
+	Months *int `json:"months,omitempty"`
 }
 
 // TriggersCreateSilenceRequest defines model for triggers.createSilenceRequest.

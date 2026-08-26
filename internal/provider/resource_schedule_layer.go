@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework-timeouts/resource/timeouts"
@@ -204,7 +206,7 @@ func (r *scheduleLayerResource) Create(ctx context.Context, req resource.CreateR
 		resp.Diagnostics.AddError("Unable to encode layer create request", err.Error())
 		return
 	}
-	createResp, err := r.client.PostAdminSchedulesIdLayersWithResponse(ctx, scheduleID, client.PostAdminSchedulesIdLayersJSONRequestBody(createBody))
+	createResp, err := r.client.PostAdminSchedulesIdLayersWithBodyWithResponse(ctx, scheduleID, "application/json", createBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create schedule layer", err.Error())
 		return
@@ -331,7 +333,7 @@ func (r *scheduleLayerResource) Update(ctx context.Context, req resource.UpdateR
 		resp.Diagnostics.AddError("Unable to encode layer update request", err.Error())
 		return
 	}
-	updateResp, err := r.client.PutAdminLayersIdWithResponse(ctx, id, client.PutAdminLayersIdJSONRequestBody(updateBody))
+	updateResp, err := r.client.PutAdminLayersIdWithBodyWithResponse(ctx, id, "application/json", updateBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to update schedule layer", err.Error())
 		return
@@ -430,7 +432,7 @@ func (r *scheduleLayerResource) putMembers(ctx context.Context, layerID string, 
 	if err != nil {
 		return nil, diagsFromError("Unable to encode layer members request", err)
 	}
-	membersResp, err := r.client.PutAdminLayersIdMembersWithResponse(ctx, layerID, client.PutAdminLayersIdMembersJSONRequestBody(body))
+	membersResp, err := r.client.PutAdminLayersIdMembersWithBodyWithResponse(ctx, layerID, "application/json", body)
 	if err != nil {
 		return nil, diagsFromError("Unable to set layer members", err)
 	}
@@ -461,7 +463,7 @@ func (r *scheduleLayerResource) putRestrictions(ctx context.Context, layerID str
 	if err != nil {
 		return nil, diagsFromError("Unable to encode layer restrictions request", err)
 	}
-	restrictionsResp, err := r.client.PutAdminLayersIdRestrictionsWithResponse(ctx, layerID, client.PutAdminLayersIdRestrictionsJSONRequestBody(body))
+	restrictionsResp, err := r.client.PutAdminLayersIdRestrictionsWithBodyWithResponse(ctx, layerID, "application/json", body)
 	if err != nil {
 		return nil, diagsFromError("Unable to set layer restrictions", err)
 	}
@@ -477,12 +479,75 @@ func layerRespToModel(l *client.AdminLayerResp, tf timeouts.Value) scheduleLayer
 		ScheduleID:     strFromPtr(l.ScheduleId),
 		Name:           strFromPtr(l.Name),
 		Tier:           int64FromIntPtr(l.Tier),
-		RotationLength: strFromPtr(l.RotationLength),
+		RotationLength: intervalToISO8601(l.RotationLength),
 		HandoffAt:      strFromPtr(l.HandoffAt),
 		StartAt:        strFromPtr(l.StartAt),
 		EndAt:          strFromPtr(l.EndAt),
 		Timeouts:       tf,
 	}
+}
+
+// intervalToISO8601 converts the API's calendar-aware interval object into a
+// stable Terraform string. Whole-week day counts use W so the documented P1W
+// and P2W configurations round-trip without a perpetual diff.
+func intervalToISO8601(iv *client.PgintervalInterval) types.String {
+	if iv == nil {
+		return types.StringNull()
+	}
+	months := int64FromInt(iv.Months)
+	days := int64FromInt(iv.Days)
+	micros := int64FromInt(iv.Micros)
+
+	if months == 0 && days > 0 && days%7 == 0 && micros == 0 {
+		return types.StringValue("P" + strconv.FormatInt(days/7, 10) + "W")
+	}
+
+	var out strings.Builder
+	out.WriteByte('P')
+	if months != 0 {
+		out.WriteString(strconv.FormatInt(months, 10))
+		out.WriteByte('M')
+	}
+	if days != 0 {
+		out.WriteString(strconv.FormatInt(days, 10))
+		out.WriteByte('D')
+	}
+	if micros != 0 {
+		out.WriteByte('T')
+		hours := micros / 3_600_000_000
+		micros %= 3_600_000_000
+		minutes := micros / 60_000_000
+		micros %= 60_000_000
+		if hours != 0 {
+			out.WriteString(strconv.FormatInt(hours, 10))
+			out.WriteByte('H')
+		}
+		if minutes != 0 {
+			out.WriteString(strconv.FormatInt(minutes, 10))
+			out.WriteByte('M')
+		}
+		if micros != 0 {
+			seconds := strconv.FormatInt(micros/1_000_000, 10)
+			fraction := strings.TrimRight(fmt.Sprintf("%06d", micros%1_000_000), "0")
+			out.WriteString(seconds)
+			if fraction != "" {
+				out.WriteByte('.')
+				out.WriteString(fraction)
+			}
+			out.WriteByte('S')
+		}
+	}
+	if out.Len() == 1 {
+		return types.StringValue("PT0S")
+	}
+	return types.StringValue(out.String())
+}
+
+func int64FromInt(value *int) int64 {
+	if value == nil {
+		return 0
+	}
+	return int64(*value)
 }
 
 func memberRespToModel(members *[]client.AdminMemberResp) []layerMemberModel {

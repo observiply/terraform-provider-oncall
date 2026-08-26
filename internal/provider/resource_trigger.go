@@ -220,7 +220,7 @@ func (r *triggerResource) Create(ctx context.Context, req resource.CreateRequest
 		resp.Diagnostics.AddError("Unable to encode trigger create request", err.Error())
 		return
 	}
-	createResp, err := r.client.PostAdminTeamsIdTriggersWithResponse(ctx, ownerID, client.PostAdminTeamsIdTriggersJSONRequestBody(createBody))
+	createResp, err := r.client.PostAdminTeamsIdTriggersWithBodyWithResponse(ctx, ownerID, "application/json", createBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create trigger", err.Error())
 		return
@@ -273,7 +273,7 @@ func (r *triggerResource) Create(ctx context.Context, req resource.CreateRequest
 		resp.Diagnostics.AddError("Unable to encode trigger sharing request", err.Error())
 		return
 	}
-	sharingResp, err := r.client.PutAdminTriggersIdTeamsWithResponse(ctx, triggerID, client.PutAdminTriggersIdTeamsJSONRequestBody(sharingBody))
+	sharingResp, err := r.client.PutAdminTriggersIdTeamsWithBodyWithResponse(ctx, triggerID, "application/json", sharingBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to set trigger sharing", err.Error())
 		return
@@ -381,7 +381,7 @@ func (r *triggerResource) Update(ctx context.Context, req resource.UpdateRequest
 		resp.Diagnostics.AddError("Unable to encode trigger update request", err.Error())
 		return
 	}
-	updateResp, err := r.client.PutAdminTriggersIdWithResponse(ctx, id, client.PutAdminTriggersIdJSONRequestBody(updateBody))
+	updateResp, err := r.client.PutAdminTriggersIdWithBodyWithResponse(ctx, id, "application/json", updateBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to update trigger", err.Error())
 		return
@@ -430,7 +430,7 @@ func (r *triggerResource) Update(ctx context.Context, req resource.UpdateRequest
 		resp.Diagnostics.AddError("Unable to encode trigger sharing request", err.Error())
 		return
 	}
-	sharingResp, err := r.client.PutAdminTriggersIdTeamsWithResponse(ctx, id, client.PutAdminTriggersIdTeamsJSONRequestBody(sharingBody))
+	sharingResp, err := r.client.PutAdminTriggersIdTeamsWithBodyWithResponse(ctx, id, "application/json", sharingBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to set trigger sharing", err.Error())
 		return

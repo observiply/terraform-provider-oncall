@@ -115,7 +115,7 @@ func (r *integrationResource) Schema(ctx context.Context, _ resource.SchemaReque
 			},
 			"kind": schema.StringAttribute{
 				Required:    true,
-				Description: "Integration kind, e.g. \"webhook\".",
+				Description: "Integration kind. Currently only \"outgoing_webhook\" is supported.",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:    true,
@@ -260,7 +260,7 @@ func (r *integrationResource) Create(ctx context.Context, req resource.CreateReq
 		resp.Diagnostics.AddError("Unable to encode integration create request", err.Error())
 		return
 	}
-	createResp, err := r.client.PostAdminTeamsIdIntegrationsWithResponse(ctx, ownerID, client.PostAdminTeamsIdIntegrationsJSONRequestBody(createBody))
+	createResp, err := r.client.PostAdminTeamsIdIntegrationsWithBodyWithResponse(ctx, ownerID, "application/json", createBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create integration", err.Error())
 		return
@@ -300,7 +300,7 @@ func (r *integrationResource) Create(ctx context.Context, req resource.CreateReq
 		resp.Diagnostics.AddError("Unable to encode integration sharing request", err.Error())
 		return
 	}
-	sharingResp, err := r.client.PutAdminIntegrationsIdTeamsWithResponse(ctx, integrationID, client.PutAdminIntegrationsIdTeamsJSONRequestBody(sharingBody))
+	sharingResp, err := r.client.PutAdminIntegrationsIdTeamsWithBodyWithResponse(ctx, integrationID, "application/json", sharingBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to set integration sharing", err.Error())
 		return
@@ -415,7 +415,7 @@ func (r *integrationResource) Update(ctx context.Context, req resource.UpdateReq
 		resp.Diagnostics.AddError("Unable to encode integration update request", err.Error())
 		return
 	}
-	updateResp, err := r.client.PutAdminIntegrationsIdWithResponse(ctx, id, client.PutAdminIntegrationsIdJSONRequestBody(updateBody))
+	updateResp, err := r.client.PutAdminIntegrationsIdWithBodyWithResponse(ctx, id, "application/json", updateBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to update integration", err.Error())
 		return
@@ -450,7 +450,7 @@ func (r *integrationResource) Update(ctx context.Context, req resource.UpdateReq
 		resp.Diagnostics.AddError("Unable to encode integration sharing request", err.Error())
 		return
 	}
-	sharingResp, err := r.client.PutAdminIntegrationsIdTeamsWithResponse(ctx, id, client.PutAdminIntegrationsIdTeamsJSONRequestBody(sharingBody))
+	sharingResp, err := r.client.PutAdminIntegrationsIdTeamsWithBodyWithResponse(ctx, id, "application/json", sharingBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to set integration sharing", err.Error())
 		return
@@ -494,7 +494,7 @@ func (r *integrationResource) syncSecret(ctx context.Context, cfg tfsdk.Config, 
 		diags.AddError("Unable to encode integration secret request", err.Error())
 		return diags
 	}
-	secretResp, err := r.client.PutAdminIntegrationsIdSecretWithResponse(ctx, id, client.PutAdminIntegrationsIdSecretJSONRequestBody(body))
+	secretResp, err := r.client.PutAdminIntegrationsIdSecretWithBodyWithResponse(ctx, id, "application/json", body)
 	if err != nil {
 		diags.AddError("Unable to set integration secret", err.Error())
 		return diags

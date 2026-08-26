@@ -166,7 +166,7 @@ func (r *scheduleResource) Create(ctx context.Context, req resource.CreateReques
 		resp.Diagnostics.AddError("Unable to encode schedule create request", err.Error())
 		return
 	}
-	createResp, err := r.client.PostAdminSchedulesWithResponse(ctx, client.PostAdminSchedulesJSONRequestBody(createBody))
+	createResp, err := r.client.PostAdminSchedulesWithBodyWithResponse(ctx, "application/json", createBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to create schedule", err.Error())
 		return
@@ -209,7 +209,7 @@ func (r *scheduleResource) Create(ctx context.Context, req resource.CreateReques
 		resp.Diagnostics.AddError("Unable to encode schedule sharing request", err.Error())
 		return
 	}
-	sharingResp, err := r.client.PutAdminSchedulesIdTeamsWithResponse(ctx, scheduleID, client.PutAdminSchedulesIdTeamsJSONRequestBody(sharingBody))
+	sharingResp, err := r.client.PutAdminSchedulesIdTeamsWithBodyWithResponse(ctx, scheduleID, "application/json", sharingBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to set schedule sharing", err.Error())
 		return
@@ -308,7 +308,7 @@ func (r *scheduleResource) Update(ctx context.Context, req resource.UpdateReques
 		resp.Diagnostics.AddError("Unable to encode schedule update request", err.Error())
 		return
 	}
-	updateResp, err := r.client.PutAdminSchedulesIdWithResponse(ctx, id, client.PutAdminSchedulesIdJSONRequestBody(updateBody))
+	updateResp, err := r.client.PutAdminSchedulesIdWithBodyWithResponse(ctx, id, "application/json", updateBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to update schedule", err.Error())
 		return
@@ -350,7 +350,7 @@ func (r *scheduleResource) Update(ctx context.Context, req resource.UpdateReques
 		resp.Diagnostics.AddError("Unable to encode schedule sharing request", err.Error())
 		return
 	}
-	sharingResp, err := r.client.PutAdminSchedulesIdTeamsWithResponse(ctx, id, client.PutAdminSchedulesIdTeamsJSONRequestBody(sharingBody))
+	sharingResp, err := r.client.PutAdminSchedulesIdTeamsWithBodyWithResponse(ctx, id, "application/json", sharingBody)
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to set schedule sharing", err.Error())
 		return

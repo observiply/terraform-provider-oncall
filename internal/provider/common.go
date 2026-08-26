@@ -1,7 +1,9 @@
 package provider
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"sort"
 
@@ -92,17 +94,27 @@ func intPtrFromInt64(v types.Int64) *int {
 	return &i
 }
 
-// newBody builds one of the generated client's "oneOf" request-body wrapper
+// newBody builds and encodes one of the generated client's "oneOf" request-body wrapper
 // types (client.PostAdminSchedulesJSONBody and friends — an artifact of the
 // `oneOf: [{type: object}, $ref]` shape swag emits for every documented
 // body) by calling its generated From<Schema> setter. Call as e.g.
 // newBody((*client.PostAdminSchedulesJSONBody).FromAdminCreateScheduleBody, client.AdminCreateScheduleBody{...}).
-// The setter only errors if the value fails to json.Marshal, which cannot
-// happen for these plain pointer-field structs.
-func newBody[B any, V any](set func(*B, V) error, v V) (B, error) {
+//
+// The generated JSONRequestBody types are distinct named copies of these
+// wrappers. Converting a wrapper to one of those types drops its MarshalJSON
+// method, so encoding/json sees only the unexported union field and sends {}.
+// Returning an encoded reader keeps the wrapper's generated marshaler in play;
+// callers must use the client's WithBodyWithResponse method.
+func newBody[B any, V any](set func(*B, V) error, v V) (*bytes.Reader, error) {
 	var b B
-	err := set(&b, v)
-	return b, err
+	if err := set(&b, v); err != nil {
+		return nil, err
+	}
+	encoded, err := json.Marshal(b)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewReader(encoded), nil
 }
 
 // unexpectedStatus builds a diagnostic for an HTTP response the caller
