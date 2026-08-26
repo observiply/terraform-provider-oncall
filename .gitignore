@@ -1,0 +1,9 @@
+/terraform-provider-oncall
+/dist/
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+.DS_Store

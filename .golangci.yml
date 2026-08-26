@@ -1,0 +1,73 @@
+version: "2"
+
+linters:
+  default: none
+  exclusions:
+    rules:
+    - path: "_test\\.go"
+      linters:
+        - gosec
+        - errcheck
+    - path: "internal/client/client\\.gen\\.go"
+      linters:
+        - errcheck
+        - govet
+        - staticcheck
+        - unused
+        - revive
+        - gocritic
+        - gosec
+        - nilerr
+        - cyclop
+        - gocognit
+  enable:
+    # Correctness
+    - errcheck # unchecked errors
+    - govet # suspicious constructs
+    - staticcheck # staticcheck suite
+    - unused # unused code
+
+    # Style / best practices
+    - revive # opinionated linter (replaces golint)
+    - gocritic # broad set of style/perf checks
+
+    # Safety
+    - gosec # security issues
+    - nilerr # returning nil after checking err != nil
+
+    # Complexity
+    - cyclop # cyclomatic complexity
+    - gocognit # cognitive complexity
+
+  settings:
+    cyclop:
+      max-complexity: 15
+    gocognit:
+      min-complexity: 20
+    revive:
+      rules:
+        - name: error-return
+        - name: error-strings
+        - name: error-naming
+        - name: if-return
+        - name: var-naming
+        - name: exported
+          disabled: true
+        - name: dot-imports
+          disabled: true
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  exclusions:
+    paths:
+      - "internal/client/client.gen.go"
+
+issues:
+  max-same-issues: 5

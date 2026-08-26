@@ -1,0 +1,70 @@
+name: CI
+
+# This repo is public and standalone (not part of oncall's internal ARC
+# Kubernetes cluster) — standard GitHub-hosted runners, not arc-runner-set.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: go generate (regenerate client from vendored swagger.json)
+        run: go generate ./...
+
+      - name: Fail if generated client is stale
+        run: git diff --exit-code -- internal/client/client.gen.go
+
+      - name: go build
+        run: go build ./...
+
+      - name: go vet
+        run: go vet ./...
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+  spec-drift:
+    runs-on: ubuntu-latest
+    # Diffs the vendored swagger.json against oncall's live main so a silently
+    # updated spec can't regenerate the client mid-PR and ship a provider that
+    # compiles but lies about the API it talks to. Bump the vendored copy
+    # deliberately (see README.md) when this fails.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch oncall main's swagger.json
+        run: |
+          curl -fsSL -o /tmp/oncall-swagger.json \
+            https://raw.githubusercontent.com/observiply/oncall/main/docs/swagger.json
+
+      - name: Compare against vendored copy
+        run: diff -u internal/client/swagger.json /tmp/oncall-swagger.json
+
+  tofu-fmt:
+    # observiply's HCL tooling is OpenTofu, not Terraform (see auth/tofu/) —
+    # `fmt` is syntax-compatible either way, but use the CLI actually in use.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_wrapper: false
+
+      - name: tofu fmt -check
+        run: tofu fmt -check -recursive examples/
