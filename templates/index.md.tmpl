@@ -1,0 +1,76 @@
+---
+page_title: "{{.ProviderShortName}} Provider"
+subcategory: ""
+description: |-
+{{ .Description | plainmarkdown | trimspace | prefixlines "  " }}
+---
+
+# {{.ProviderShortName}} Provider
+
+{{ .Description | trimspace }}
+
+## Getting a credential
+
+Log into oncall, go to **Settings → API Tokens**, click **Create**, and copy the
+token — it is shown exactly once. Set it as `ONCALL_TOKEN` (or the provider's
+`token` argument, though the env var keeps it out of `.tf` files and version
+control).
+
+The token is:
+
+- **scoped** to oncall and to your teams — it cannot reach authentik or any
+  other Observiply product, and it only sees the teams the issuing user
+  belongs to;
+- **time-limited** — 90 days by default, 365 days maximum;
+- **tied to your account** — acting as you, and (once the delegated-refresh
+  stage lands) revoked automatically if your upstream account is disabled.
+
+No authentik admin access is required to get one — that's the point.
+
+**Rotation runbook** (this is the failure people actually hit, not the
+90-day cap in the abstract): before the current token expires, issue a new
+one from the same Settings page, update the secret in wherever your CI or
+`ONCALL_TOKEN` is set, run a `plan` to confirm it authenticates, then revoke
+the old token from the same page. Don't revoke first — a mid-rotation gap
+fails every pipeline run until the new secret propagates.
+
+## Teams are not managed by this provider
+
+An administrator creates and maps teams in the oncall UI (Teams → Manage).
+This provider only manages resources *within* teams that already exist —
+there is no `oncall_team` resource, only the `oncall_team` /
+`oncall_teams` data sources to look one up by name.
+
+## Sharing and `owner_team_id`
+
+Every schedule, trigger, and integration has an `owner_team_id`, set once at
+creation from `team_ids`. The owner team controls sharing forever — only a
+caller with `share` in the owner team can change who a resource is shared
+with — so `owner_team_id` is **immutable** and is always implicitly present
+in `team_ids`, whether or not you list it explicitly.
+
+## Secrets are write-only
+
+`oncall_integration`'s outbound auth secret uses Terraform's write-only
+attribute pattern (`secret_wo` / `secret_wo_version`): the value is sent on
+apply but never written to state or read back from the API. This requires
+**Terraform or OpenTofu >= 1.11**.
+
+## Example Usage
+
+{{tffile "examples/provider/provider.tf"}}
+
+See `examples/complete/` in the provider's repository for a fuller setup —
+a schedule with two rotation layers, a trigger with routed targets, and an
+integration, all shared across two teams.
+
+{{ .SchemaMarkdown | trimspace }}
+
+## Version compatibility
+
+This provider targets oncall API `v1`. A provider minor release may require
+a minimum oncall version, documented in that release's notes. Since oncall
+is self-hosted, the provider is expected to tolerate an older oncall
+install than it was built against — a resource requiring a newer oncall
+returns a clear "this resource requires oncall >= X" error rather than a
+bare 404.
