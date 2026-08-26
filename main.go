@@ -13,6 +13,10 @@ import (
 	"github.com/observiply/terraform-provider-oncall/internal/provider"
 )
 
+// Regenerate the API client before tfplugindocs builds the provider to export
+// its schema. This ordering matters when an API change adds or removes client
+// methods used by the provider.
+//go:generate go generate ./internal/client
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.25.0 generate
 
 // version is overwritten at build time via:

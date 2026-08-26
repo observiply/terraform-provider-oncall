@@ -43,11 +43,6 @@ type AdminAddUserRoleBody struct {
 
 // AdminApiTokenInventoryResponse defines model for admin.apiTokenInventoryResponse.
 type AdminApiTokenInventoryResponse struct {
-	// Authorized Authorized is true once this token has a live authentik refresh token
-	// attached (plan/tfprovider-11-delegated-refresh.md stage 2). False marks
-	// a legacy stage-1 token still resolving from the cached group snapshot —
-	// the frontend uses this to show the re-authorize prompt.
-	Authorized *bool   `json:"authorized,omitempty"`
 	CreatedAt  *string `json:"created_at,omitempty"`
 	ExpiresAt  *string `json:"expires_at,omitempty"`
 	Id         *string `json:"id,omitempty"`
@@ -61,11 +56,6 @@ type AdminApiTokenInventoryResponse struct {
 
 // AdminApiTokenResponse defines model for admin.apiTokenResponse.
 type AdminApiTokenResponse struct {
-	// Authorized Authorized is true once this token has a live authentik refresh token
-	// attached (plan/tfprovider-11-delegated-refresh.md stage 2). False marks
-	// a legacy stage-1 token still resolving from the cached group snapshot —
-	// the frontend uses this to show the re-authorize prompt.
-	Authorized *bool   `json:"authorized,omitempty"`
 	CreatedAt  *string `json:"created_at,omitempty"`
 	ExpiresAt  *string `json:"expires_at,omitempty"`
 	Id         *string `json:"id,omitempty"`
@@ -122,11 +112,6 @@ type AdminCreateAPITokenBody struct {
 
 // AdminCreateAPITokenResponse defines model for admin.createAPITokenResponse.
 type AdminCreateAPITokenResponse struct {
-	// Authorized Authorized is true once this token has a live authentik refresh token
-	// attached (plan/tfprovider-11-delegated-refresh.md stage 2). False marks
-	// a legacy stage-1 token still resolving from the cached group snapshot —
-	// the frontend uses this to show the re-authorize prompt.
-	Authorized *bool   `json:"authorized,omitempty"`
 	CreatedAt  *string `json:"created_at,omitempty"`
 	ExpiresAt  *string `json:"expires_at,omitempty"`
 	Id         *string `json:"id,omitempty"`
@@ -231,18 +216,12 @@ type AdminLayerWithMembers struct {
 
 // AdminMeResponse defines model for admin.meResponse.
 type AdminMeResponse struct {
-	// ApiTokenStage2Available APITokenStage2Available is true when this install has provisioned the
-	// delegated authentik provider (plan/tfprovider-11-delegated-refresh.md).
-	// The frontend uses this to decide whether to show the re-authorize nag
-	// on legacy tokens — showing it on an install that can never satisfy it
-	// would just be a permanent, unactionable warning.
-	ApiTokenStage2Available *bool                        `json:"api_token_stage2_available,omitempty"`
-	IsAdmin                 *bool                        `json:"is_admin,omitempty"`
-	IsGlobalViewer          *bool                        `json:"is_global_viewer,omitempty"`
-	Name                    *string                      `json:"name,omitempty"`
-	Permissions             *map[string][]AdminPermGrant `json:"permissions,omitempty"`
-	Teams                   *[]AdminTeamEntry            `json:"teams,omitempty"`
-	UserId                  *string                      `json:"user_id,omitempty"`
+	IsAdmin        *bool                        `json:"is_admin,omitempty"`
+	IsGlobalViewer *bool                        `json:"is_global_viewer,omitempty"`
+	Name           *string                      `json:"name,omitempty"`
+	Permissions    *map[string][]AdminPermGrant `json:"permissions,omitempty"`
+	Teams          *[]AdminTeamEntry            `json:"teams,omitempty"`
+	UserId         *string                      `json:"user_id,omitempty"`
 }
 
 // AdminMemberInputBody defines model for admin.memberInputBody.
@@ -323,11 +302,6 @@ type AdminOverrideResponse struct {
 	ScheduleId       *string `json:"schedule_id,omitempty"`
 	StartAt          *string `json:"start_at,omitempty"`
 	UserId           *string `json:"user_id,omitempty"`
-}
-
-// AdminPendingAPITokenResponse defines model for admin.pendingAPITokenResponse.
-type AdminPendingAPITokenResponse struct {
-	AuthorizeUrl *string `json:"authorize_url,omitempty"`
 }
 
 // AdminPermGrant defines model for admin.permGrant.
@@ -658,7 +632,10 @@ type IncidentsIncidentDetailResponse struct {
 	DedupKey           *string                           `json:"dedup_key,omitempty"`
 	DuplicateCount     *int                              `json:"duplicate_count,omitempty"`
 	Id                 *string                           `json:"id,omitempty"`
+	IncomingWebhookId  *string                           `json:"incoming_webhook_id,omitempty"`
 	Outbox             *[]IncidentsOutboxMessageResponse `json:"outbox,omitempty"`
+	OutboxLimit        *int                              `json:"outbox_limit,omitempty"`
+	OutboxTotal        *int                              `json:"outbox_total,omitempty"`
 	OwnerTeamId        *string                           `json:"owner_team_id,omitempty"`
 	OwnerTeamName      *string                           `json:"owner_team_name,omitempty"`
 	ResolvedAt         *string                           `json:"resolved_at,omitempty"`
@@ -675,6 +652,8 @@ type IncidentsIncidentDetailResponse struct {
 	UpdatedAt          *string                           `json:"updated_at,omitempty"`
 	Vars               interface{}                       `json:"vars,omitempty"`
 	Webhooks           *[]IncidentsWebhookSummary        `json:"webhooks,omitempty"`
+	WebhooksLimit      *int                              `json:"webhooks_limit,omitempty"`
+	WebhooksTotal      *int                              `json:"webhooks_total,omitempty"`
 }
 
 // IncidentsIncidentListResponse defines model for incidents.incidentListResponse.
@@ -694,6 +673,7 @@ type IncidentsIncidentResponse struct {
 	DedupKey           *string     `json:"dedup_key,omitempty"`
 	DuplicateCount     *int        `json:"duplicate_count,omitempty"`
 	Id                 *string     `json:"id,omitempty"`
+	IncomingWebhookId  *string     `json:"incoming_webhook_id,omitempty"`
 	OwnerTeamId        *string     `json:"owner_team_id,omitempty"`
 	OwnerTeamName      *string     `json:"owner_team_name,omitempty"`
 	ResolvedAt         *string     `json:"resolved_at,omitempty"`
@@ -709,6 +689,14 @@ type IncidentsIncidentResponse struct {
 	UpdateCount        *int        `json:"update_count,omitempty"`
 	UpdatedAt          *string     `json:"updated_at,omitempty"`
 	Vars               interface{} `json:"vars,omitempty"`
+}
+
+// IncidentsOutboxListResponse defines model for incidents.outboxListResponse.
+type IncidentsOutboxListResponse struct {
+	Items  *[]IncidentsOutboxMessageResponse `json:"items,omitempty"`
+	Limit  *int                              `json:"limit,omitempty"`
+	Offset *int                              `json:"offset,omitempty"`
+	Total  *int                              `json:"total,omitempty"`
 }
 
 // IncidentsOutboxMessageResponse defines model for incidents.outboxMessageResponse.
@@ -757,6 +745,14 @@ type IncidentsSilenceRequest struct {
 	// StartsAt StartsAt optionally schedules the silence to begin in the future (RFC3339).
 	// Omitted or in the past => begins immediately (current behavior).
 	StartsAt *string `json:"starts_at,omitempty"`
+}
+
+// IncidentsWebhookListResponse defines model for incidents.webhookListResponse.
+type IncidentsWebhookListResponse struct {
+	Items  *[]IncidentsWebhookSummary `json:"items,omitempty"`
+	Limit  *int                       `json:"limit,omitempty"`
+	Offset *int                       `json:"offset,omitempty"`
+	Total  *int                       `json:"total,omitempty"`
 }
 
 // IncidentsWebhookSummary defines model for incidents.webhookSummary.
@@ -1700,6 +1696,15 @@ type PostIncidentsIdAdvanceJSONBody struct {
 // PostIncidentsIdAdvanceJSONBody0 defines parameters for PostIncidentsIdAdvance.
 type PostIncidentsIdAdvanceJSONBody0 = map[string]interface{}
 
+// GetIncidentsIdOutboxParams defines parameters for GetIncidentsIdOutbox.
+type GetIncidentsIdOutboxParams struct {
+	// Limit Page size (default 50, max 200)
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Rows to skip (default 0)
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
 // PostIncidentsIdResolveJSONBody defines parameters for PostIncidentsIdResolve.
 type PostIncidentsIdResolveJSONBody struct {
 	union json.RawMessage
@@ -1724,6 +1729,15 @@ type PostIncidentsIdSilenceJSONBody struct {
 
 // PostIncidentsIdSilenceJSONBody0 defines parameters for PostIncidentsIdSilence.
 type PostIncidentsIdSilenceJSONBody0 = map[string]interface{}
+
+// GetIncidentsIdWebhooksParams defines parameters for GetIncidentsIdWebhooks.
+type GetIncidentsIdWebhooksParams struct {
+	// Limit Page size (default 50, max 200)
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Rows to skip (default 0)
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+}
 
 // PostIngestIdJSONBody defines parameters for PostIngestId.
 type PostIngestIdJSONBody = map[string]interface{}
@@ -6455,7 +6469,7 @@ type ClientInterface interface {
 
 	// PostAdminMeTokensWithBody Create an API token
 	//
-	// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+	// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 	//
 	// Takes any type of body and a specified content type.
 	//
@@ -6464,7 +6478,7 @@ type ClientInterface interface {
 
 	// PostAdminMeTokens Create an API token
 	//
-	// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+	// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 	//
 	// Takes a body of the `application/json` content type.
 	//
@@ -6477,20 +6491,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with DELETE /admin/me/tokens/{id} (the `DeleteAdminMeTokensId` operationId).
 	DeleteAdminMeTokensId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// PostAdminMeTokensIdReauthorize Re-authorize a legacy API token
-	//
-	// Self-service. Starts the same authentik consent round-trip as creation, but attaches the refresh token to an existing (pre-stage-2) token instead of minting a new one — the existing secret keeps working unchanged. 501 if stage 2 isn't configured on this install; 409 if the token is already authorized.
-	//
-	// Corresponds with POST /admin/me/tokens/{id}/reauthorize (the `PostAdminMeTokensIdReauthorize` operationId).
-	PostAdminMeTokensIdReauthorize(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetAdminMeTokensIdReveal Reveal a freshly-created API token's secret
-	//
-	// Self-service, one-time. Only valid for a few minutes after GET /auth/token-callback completes a stage-2 creation — see internal/apitoken's reveal cache. 410 once already revealed, expired, or never issued via this flow.
-	//
-	// Corresponds with GET /admin/me/tokens/{id}/reveal (the `GetAdminMeTokensIdReveal` operationId).
-	GetAdminMeTokensIdReveal(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// GetAdminMeTriggerPolicies List my trigger notification-policy routes
 	//
@@ -6531,13 +6531,6 @@ type ClientInterface interface {
 	// Corresponds with DELETE /admin/overrides/{id} (the `DeleteAdminOverridesId` operationId).
 	DeleteAdminOverridesId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// GetAdminOverridesId Get override
-	//
-	// Requires team view role on the override's schedule (or admin).
-	//
-	// Corresponds with GET /admin/overrides/{id} (the `GetAdminOverridesId` operationId).
-	GetAdminOverridesId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// GetAdminResources List registered resources
 	//
 	// Returns all registered resource names and valid verbs. Used by the UI to render the permission grid.
@@ -6558,13 +6551,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with DELETE /admin/schedule-reminders/{id} (the `DeleteAdminScheduleRemindersId` operationId).
 	DeleteAdminScheduleRemindersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetAdminScheduleRemindersId Get a schedule shift reminder
-	//
-	// Requires schedule view access.
-	//
-	// Corresponds with GET /admin/schedule-reminders/{id} (the `GetAdminScheduleRemindersId` operationId).
-	GetAdminScheduleRemindersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutAdminScheduleRemindersIdWithBody Update a schedule shift reminder
 	//
@@ -6952,11 +6938,6 @@ type ClientInterface interface {
 	//
 	// Corresponds with DELETE /admin/teams/{id}/roles/{roleId} (the `DeleteAdminTeamsIdRolesRoleId` operationId).
 	DeleteAdminTeamsIdRolesRoleId(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetAdminTeamsIdRolesRoleId Get team role
-	//
-	// Corresponds with GET /admin/teams/{id}/roles/{roleId} (the `GetAdminTeamsIdRolesRoleId` operationId).
-	GetAdminTeamsIdRolesRoleId(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PutAdminTeamsIdRolesRoleIdWithBody Update team role
 	//
@@ -7609,6 +7590,13 @@ type ClientInterface interface {
 	// Corresponds with POST /incidents/{id}/advance (the `PostIncidentsIdAdvance` operationId).
 	PostIncidentsIdAdvance(ctx context.Context, id string, body PostIncidentsIdAdvanceJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetIncidentsIdOutbox List incident outbox messages
+	//
+	// Returns the notification outbox messages for an incident, oldest first, paginated.
+	//
+	// Corresponds with GET /incidents/{id}/outbox (the `GetIncidentsIdOutbox` operationId).
+	GetIncidentsIdOutbox(ctx context.Context, id string, params *GetIncidentsIdOutboxParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostIncidentsIdResolveWithBody Resolve an incident
 	//
 	// Transitions incident to 'resolved', cancels pending notifications, fires state_change targets.
@@ -7665,6 +7653,13 @@ type ClientInterface interface {
 	//
 	// Corresponds with POST /incidents/{id}/unack (the `PostIncidentsIdUnack` operationId).
 	PostIncidentsIdUnack(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetIncidentsIdWebhooks List incident webhooks
+	//
+	// Returns the incoming webhooks linked to an incident, oldest first, paginated.
+	//
+	// Corresponds with GET /incidents/{id}/webhooks (the `GetIncidentsIdWebhooks` operationId).
+	GetIncidentsIdWebhooks(ctx context.Context, id string, params *GetIncidentsIdWebhooksParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// PostIngestIdWithBody Receive an incoming alert webhook
 	//
@@ -8933,7 +8928,7 @@ func (c *Client) GetAdminMeTokens(ctx context.Context, reqEditors ...RequestEdit
 
 // PostAdminMeTokensWithBody Create an API token
 //
-// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 //
 // Takes any type of body and a specified content type.
 //
@@ -8952,7 +8947,7 @@ func (c *Client) PostAdminMeTokensWithBody(ctx context.Context, contentType stri
 
 // PostAdminMeTokens Create an API token
 //
-// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 //
 // Takes a body of the `application/json` content type.
 //
@@ -8976,40 +8971,6 @@ func (c *Client) PostAdminMeTokens(ctx context.Context, body PostAdminMeTokensJS
 // Corresponds with DELETE /admin/me/tokens/{id} (the `DeleteAdminMeTokensId` operationId).
 func (c *Client) DeleteAdminMeTokensId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteAdminMeTokensIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// PostAdminMeTokensIdReauthorize Re-authorize a legacy API token
-//
-// Self-service. Starts the same authentik consent round-trip as creation, but attaches the refresh token to an existing (pre-stage-2) token instead of minting a new one — the existing secret keeps working unchanged. 501 if stage 2 isn't configured on this install; 409 if the token is already authorized.
-//
-// Corresponds with POST /admin/me/tokens/{id}/reauthorize (the `PostAdminMeTokensIdReauthorize` operationId).
-func (c *Client) PostAdminMeTokensIdReauthorize(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewPostAdminMeTokensIdReauthorizeRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetAdminMeTokensIdReveal Reveal a freshly-created API token's secret
-//
-// Self-service, one-time. Only valid for a few minutes after GET /auth/token-callback completes a stage-2 creation — see internal/apitoken's reveal cache. 410 once already revealed, expired, or never issued via this flow.
-//
-// Corresponds with GET /admin/me/tokens/{id}/reveal (the `GetAdminMeTokensIdReveal` operationId).
-func (c *Client) GetAdminMeTokensIdReveal(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAdminMeTokensIdRevealRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -9109,23 +9070,6 @@ func (c *Client) DeleteAdminOverridesId(ctx context.Context, id string, reqEdito
 	return c.Client.Do(req)
 }
 
-// GetAdminOverridesId Get override
-//
-// Requires team view role on the override's schedule (or admin).
-//
-// Corresponds with GET /admin/overrides/{id} (the `GetAdminOverridesId` operationId).
-func (c *Client) GetAdminOverridesId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAdminOverridesIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 // GetAdminResources List registered resources
 //
 // Returns all registered resource names and valid verbs. Used by the UI to render the permission grid.
@@ -9167,23 +9111,6 @@ func (c *Client) GetAdminRoles(ctx context.Context, reqEditors ...RequestEditorF
 // Corresponds with DELETE /admin/schedule-reminders/{id} (the `DeleteAdminScheduleRemindersId` operationId).
 func (c *Client) DeleteAdminScheduleRemindersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteAdminScheduleRemindersIdRequest(c.Server, id)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetAdminScheduleRemindersId Get a schedule shift reminder
-//
-// Requires schedule view access.
-//
-// Corresponds with GET /admin/schedule-reminders/{id} (the `GetAdminScheduleRemindersId` operationId).
-func (c *Client) GetAdminScheduleRemindersId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAdminScheduleRemindersIdRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -10061,21 +9988,6 @@ func (c *Client) PostAdminTeamsIdRoles(ctx context.Context, id string, body Post
 // Corresponds with DELETE /admin/teams/{id}/roles/{roleId} (the `DeleteAdminTeamsIdRolesRoleId` operationId).
 func (c *Client) DeleteAdminTeamsIdRolesRoleId(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteAdminTeamsIdRolesRoleIdRequest(c.Server, id, roleId)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-// GetAdminTeamsIdRolesRoleId Get team role
-//
-// Corresponds with GET /admin/teams/{id}/roles/{roleId} (the `GetAdminTeamsIdRolesRoleId` operationId).
-func (c *Client) GetAdminTeamsIdRolesRoleId(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetAdminTeamsIdRolesRoleIdRequest(c.Server, id, roleId)
 	if err != nil {
 		return nil, err
 	}
@@ -11567,6 +11479,23 @@ func (c *Client) PostIncidentsIdAdvance(ctx context.Context, id string, body Pos
 	return c.Client.Do(req)
 }
 
+// GetIncidentsIdOutbox List incident outbox messages
+//
+// Returns the notification outbox messages for an incident, oldest first, paginated.
+//
+// Corresponds with GET /incidents/{id}/outbox (the `GetIncidentsIdOutbox` operationId).
+func (c *Client) GetIncidentsIdOutbox(ctx context.Context, id string, params *GetIncidentsIdOutboxParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetIncidentsIdOutboxRequest(c.Server, id, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 // PostIncidentsIdResolveWithBody Resolve an incident
 //
 // Transitions incident to 'resolved', cancels pending notifications, fires state_change targets.
@@ -11684,6 +11613,23 @@ func (c *Client) PostIncidentsIdSilence(ctx context.Context, id string, body Pos
 // Corresponds with POST /incidents/{id}/unack (the `PostIncidentsIdUnack` operationId).
 func (c *Client) PostIncidentsIdUnack(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostIncidentsIdUnackRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// GetIncidentsIdWebhooks List incident webhooks
+//
+// Returns the incoming webhooks linked to an incident, oldest first, paginated.
+//
+// Corresponds with GET /incidents/{id}/webhooks (the `GetIncidentsIdWebhooks` operationId).
+func (c *Client) GetIncidentsIdWebhooks(ctx context.Context, id string, params *GetIncidentsIdWebhooksParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetIncidentsIdWebhooksRequest(c.Server, id, params)
 	if err != nil {
 		return nil, err
 	}
@@ -13771,74 +13717,6 @@ func NewDeleteAdminMeTokensIdRequest(server string, id string) (*http.Request, e
 	return req, nil
 }
 
-// NewPostAdminMeTokensIdReauthorizeRequest constructs an http.Request for the PostAdminMeTokensIdReauthorize method
-func NewPostAdminMeTokensIdReauthorizeRequest(server string, id string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/me/tokens/%s/reauthorize", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetAdminMeTokensIdRevealRequest constructs an http.Request for the GetAdminMeTokensIdReveal method
-func NewGetAdminMeTokensIdRevealRequest(server string, id string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/me/tokens/%s/reveal", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewGetAdminMeTriggerPoliciesRequest constructs an http.Request for the GetAdminMeTriggerPolicies method
 func NewGetAdminMeTriggerPoliciesRequest(server string) (*http.Request, error) {
 	var err error
@@ -13981,40 +13859,6 @@ func NewDeleteAdminOverridesIdRequest(server string, id string) (*http.Request, 
 	return req, nil
 }
 
-// NewGetAdminOverridesIdRequest constructs an http.Request for the GetAdminOverridesId method
-func NewGetAdminOverridesIdRequest(server string, id string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/overrides/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewGetAdminResourcesRequest constructs an http.Request for the GetAdminResources method
 func NewGetAdminResourcesRequest(server string) (*http.Request, error) {
 	var err error
@@ -14096,40 +13940,6 @@ func NewDeleteAdminScheduleRemindersIdRequest(server string, id string) (*http.R
 	}
 
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetAdminScheduleRemindersIdRequest constructs an http.Request for the GetAdminScheduleRemindersId method
-func NewGetAdminScheduleRemindersIdRequest(server string, id string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/schedule-reminders/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -15540,47 +15350,6 @@ func NewDeleteAdminTeamsIdRolesRoleIdRequest(server string, id string, roleId st
 	}
 
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetAdminTeamsIdRolesRoleIdRequest constructs an http.Request for the GetAdminTeamsIdRolesRoleId method
-func NewGetAdminTeamsIdRolesRoleIdRequest(server string, id string, roleId string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithOptions("simple", false, "roleId", roleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/teams/%s/roles/%s", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -18119,6 +17888,79 @@ func NewPostIncidentsIdAdvanceRequestWithBody(server string, id string, contentT
 	return req, nil
 }
 
+// NewGetIncidentsIdOutboxRequest constructs an http.Request for the GetIncidentsIdOutbox method
+func NewGetIncidentsIdOutboxRequest(server string, id string, params *GetIncidentsIdOutboxParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/incidents/%s/outbox", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostIncidentsIdResolveRequest calls the generic PostIncidentsIdResolve builder with application/json body
 func NewPostIncidentsIdResolveRequest(server string, id string, body PostIncidentsIdResolveJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -18347,6 +18189,79 @@ func NewPostIncidentsIdUnackRequest(server string, id string) (*http.Request, er
 	}
 
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetIncidentsIdWebhooksRequest constructs an http.Request for the GetIncidentsIdWebhooks method
+func NewGetIncidentsIdWebhooksRequest(server string, id string, params *GetIncidentsIdWebhooksParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/incidents/%s/webhooks", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
+		queryValues := queryURL.Query()
+		// rawQueryFragments collects pre-encoded query fragments from
+		// styled parameters, preserving literal commas as delimiters
+		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else {
+				for _, qp := range strings.Split(queryFrag, "&") {
+					rawQueryFragments = append(rawQueryFragments, qp)
+				}
+			}
+
+		}
+
+		if encoded := queryValues.Encode(); encoded != "" {
+			rawQueryFragments = append(rawQueryFragments, encoded)
+		}
+		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
+	}
+
+	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -19448,7 +19363,7 @@ type ClientWithResponsesInterface interface {
 
 	// PostAdminMeTokensWithBodyWithResponse Create an API token
 	//
-	// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+	// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 	//
 	// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -19457,7 +19372,7 @@ type ClientWithResponsesInterface interface {
 
 	// PostAdminMeTokensWithResponse Create an API token
 	//
-	// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+	// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 	//
 	// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 	//
@@ -19472,24 +19387,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with DELETE /admin/me/tokens/{id} (the `DeleteAdminMeTokensId` operationId).
 	DeleteAdminMeTokensIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteAdminMeTokensIdResponse, error)
-
-	// PostAdminMeTokensIdReauthorizeWithResponse Re-authorize a legacy API token
-	//
-	// Self-service. Starts the same authentik consent round-trip as creation, but attaches the refresh token to an existing (pre-stage-2) token instead of minting a new one — the existing secret keeps working unchanged. 501 if stage 2 isn't configured on this install; 409 if the token is already authorized.
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with POST /admin/me/tokens/{id}/reauthorize (the `PostAdminMeTokensIdReauthorize` operationId).
-	PostAdminMeTokensIdReauthorizeWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*PostAdminMeTokensIdReauthorizeResponse, error)
-
-	// GetAdminMeTokensIdRevealWithResponse Reveal a freshly-created API token's secret
-	//
-	// Self-service, one-time. Only valid for a few minutes after GET /auth/token-callback completes a stage-2 creation — see internal/apitoken's reveal cache. 410 once already revealed, expired, or never issued via this flow.
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/me/tokens/{id}/reveal (the `GetAdminMeTokensIdReveal` operationId).
-	GetAdminMeTokensIdRevealWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetAdminMeTokensIdRevealResponse, error)
 
 	// GetAdminMeTriggerPoliciesWithResponse List my trigger notification-policy routes
 	//
@@ -19536,15 +19433,6 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with DELETE /admin/overrides/{id} (the `DeleteAdminOverridesId` operationId).
 	DeleteAdminOverridesIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteAdminOverridesIdResponse, error)
 
-	// GetAdminOverridesIdWithResponse Get override
-	//
-	// Requires team view role on the override's schedule (or admin).
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/overrides/{id} (the `GetAdminOverridesId` operationId).
-	GetAdminOverridesIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetAdminOverridesIdResponse, error)
-
 	// GetAdminResourcesWithResponse List registered resources
 	//
 	// Returns all registered resource names and valid verbs. Used by the UI to render the permission grid.
@@ -19571,15 +19459,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with DELETE /admin/schedule-reminders/{id} (the `DeleteAdminScheduleRemindersId` operationId).
 	DeleteAdminScheduleRemindersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteAdminScheduleRemindersIdResponse, error)
-
-	// GetAdminScheduleRemindersIdWithResponse Get a schedule shift reminder
-	//
-	// Requires schedule view access.
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/schedule-reminders/{id} (the `GetAdminScheduleRemindersId` operationId).
-	GetAdminScheduleRemindersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetAdminScheduleRemindersIdResponse, error)
 
 	// PutAdminScheduleRemindersIdWithBodyWithResponse Update a schedule shift reminder
 	//
@@ -20005,13 +19884,6 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with DELETE /admin/teams/{id}/roles/{roleId} (the `DeleteAdminTeamsIdRolesRoleId` operationId).
 	DeleteAdminTeamsIdRolesRoleIdWithResponse(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*DeleteAdminTeamsIdRolesRoleIdResponse, error)
-
-	// GetAdminTeamsIdRolesRoleIdWithResponse Get team role
-	//
-	// Returns a wrapper object for the known response body format(s).
-	//
-	// Corresponds with GET /admin/teams/{id}/roles/{roleId} (the `GetAdminTeamsIdRolesRoleId` operationId).
-	GetAdminTeamsIdRolesRoleIdWithResponse(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*GetAdminTeamsIdRolesRoleIdResponse, error)
 
 	// PutAdminTeamsIdRolesRoleIdWithBodyWithResponse Update team role
 	//
@@ -20742,6 +20614,15 @@ type ClientWithResponsesInterface interface {
 	// Corresponds with POST /incidents/{id}/advance (the `PostIncidentsIdAdvance` operationId).
 	PostIncidentsIdAdvanceWithResponse(ctx context.Context, id string, body PostIncidentsIdAdvanceJSONRequestBody, reqEditors ...RequestEditorFn) (*PostIncidentsIdAdvanceResponse, error)
 
+	// GetIncidentsIdOutboxWithResponse List incident outbox messages
+	//
+	// Returns the notification outbox messages for an incident, oldest first, paginated.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /incidents/{id}/outbox (the `GetIncidentsIdOutbox` operationId).
+	GetIncidentsIdOutboxWithResponse(ctx context.Context, id string, params *GetIncidentsIdOutboxParams, reqEditors ...RequestEditorFn) (*GetIncidentsIdOutboxResponse, error)
+
 	// PostIncidentsIdResolveWithBodyWithResponse Resolve an incident
 	//
 	// Transitions incident to 'resolved', cancels pending notifications, fires state_change targets.
@@ -20804,6 +20685,15 @@ type ClientWithResponsesInterface interface {
 	//
 	// Corresponds with POST /incidents/{id}/unack (the `PostIncidentsIdUnack` operationId).
 	PostIncidentsIdUnackWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*PostIncidentsIdUnackResponse, error)
+
+	// GetIncidentsIdWebhooksWithResponse List incident webhooks
+	//
+	// Returns the incoming webhooks linked to an incident, oldest first, paginated.
+	//
+	// Returns a wrapper object for the known response body format(s).
+	//
+	// Corresponds with GET /incidents/{id}/webhooks (the `GetIncidentsIdWebhooks` operationId).
+	GetIncidentsIdWebhooksWithResponse(ctx context.Context, id string, params *GetIncidentsIdWebhooksParams, reqEditors ...RequestEditorFn) (*GetIncidentsIdWebhooksResponse, error)
 
 	// PostIngestIdWithBodyWithResponse Receive an incoming alert webhook
 	//
@@ -23643,8 +23533,6 @@ type PostAdminMeTokensResponse struct {
 	HTTPResponse *http.Response
 	// JSON201 the response for an HTTP 201 `application/json` response
 	JSON201 *AdminCreateAPITokenResponse
-	// JSON202 the response for an HTTP 202 `application/json` response
-	JSON202 *AdminPendingAPITokenResponse
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *string
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -23660,11 +23548,6 @@ type PostAdminMeTokensResponse struct {
 // GetJSON201 returns the response for an HTTP 201 `application/json` response
 func (r PostAdminMeTokensResponse) GetJSON201() *AdminCreateAPITokenResponse {
 	return r.JSON201
-}
-
-// GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostAdminMeTokensResponse) GetJSON202() *AdminPendingAPITokenResponse {
-	return r.JSON202
 }
 
 // GetJSON400 returns the response for an HTTP 400 `application/json` response
@@ -23770,144 +23653,6 @@ func (r DeleteAdminMeTokensIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteAdminMeTokensIdResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type PostAdminMeTokensIdReauthorizeResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON202 the response for an HTTP 202 `application/json` response
-	JSON202 *AdminPendingAPITokenResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *string
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *string
-	// JSON409 the response for an HTTP 409 `application/json` response
-	JSON409 *string
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *string
-	// JSON501 the response for an HTTP 501 `application/json` response
-	JSON501 *string
-}
-
-// GetJSON202 returns the response for an HTTP 202 `application/json` response
-func (r PostAdminMeTokensIdReauthorizeResponse) GetJSON202() *AdminPendingAPITokenResponse {
-	return r.JSON202
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r PostAdminMeTokensIdReauthorizeResponse) GetJSON401() *string {
-	return r.JSON401
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r PostAdminMeTokensIdReauthorizeResponse) GetJSON404() *string {
-	return r.JSON404
-}
-
-// GetJSON409 returns the response for an HTTP 409 `application/json` response
-func (r PostAdminMeTokensIdReauthorizeResponse) GetJSON409() *string {
-	return r.JSON409
-}
-
-// GetJSON500 returns the response for an HTTP 500 `application/json` response
-func (r PostAdminMeTokensIdReauthorizeResponse) GetJSON500() *string {
-	return r.JSON500
-}
-
-// GetJSON501 returns the response for an HTTP 501 `application/json` response
-func (r PostAdminMeTokensIdReauthorizeResponse) GetJSON501() *string {
-	return r.JSON501
-}
-
-// GetBody returns the raw response body bytes
-func (r PostAdminMeTokensIdReauthorizeResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r PostAdminMeTokensIdReauthorizeResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r PostAdminMeTokensIdReauthorizeResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r PostAdminMeTokensIdReauthorizeResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetAdminMeTokensIdRevealResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AdminCreateAPITokenResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *string
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *string
-	// JSON410 the response for an HTTP 410 `application/json` response
-	JSON410 *string
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAdminMeTokensIdRevealResponse) GetJSON200() *AdminCreateAPITokenResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetAdminMeTokensIdRevealResponse) GetJSON401() *string {
-	return r.JSON401
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetAdminMeTokensIdRevealResponse) GetJSON404() *string {
-	return r.JSON404
-}
-
-// GetJSON410 returns the response for an HTTP 410 `application/json` response
-func (r GetAdminMeTokensIdRevealResponse) GetJSON410() *string {
-	return r.JSON410
-}
-
-// GetBody returns the raw response body bytes
-func (r GetAdminMeTokensIdRevealResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAdminMeTokensIdRevealResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAdminMeTokensIdRevealResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetAdminMeTokensIdRevealResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -24155,75 +23900,6 @@ func (r DeleteAdminOverridesIdResponse) ContentType() string {
 	return ""
 }
 
-type GetAdminOverridesIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AdminOverrideResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *string
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *string
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *string
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *string
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAdminOverridesIdResponse) GetJSON200() *AdminOverrideResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetAdminOverridesIdResponse) GetJSON401() *string {
-	return r.JSON401
-}
-
-// GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r GetAdminOverridesIdResponse) GetJSON403() *string {
-	return r.JSON403
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetAdminOverridesIdResponse) GetJSON404() *string {
-	return r.JSON404
-}
-
-// GetJSON500 returns the response for an HTTP 500 `application/json` response
-func (r GetAdminOverridesIdResponse) GetJSON500() *string {
-	return r.JSON500
-}
-
-// GetBody returns the raw response body bytes
-func (r GetAdminOverridesIdResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAdminOverridesIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAdminOverridesIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetAdminOverridesIdResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
 type GetAdminResourcesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -24383,75 +24059,6 @@ func (r DeleteAdminScheduleRemindersIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteAdminScheduleRemindersIdResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetAdminScheduleRemindersIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AdminScheduleReminderJobResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *string
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *string
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *string
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *string
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAdminScheduleRemindersIdResponse) GetJSON200() *AdminScheduleReminderJobResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetAdminScheduleRemindersIdResponse) GetJSON401() *string {
-	return r.JSON401
-}
-
-// GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r GetAdminScheduleRemindersIdResponse) GetJSON403() *string {
-	return r.JSON403
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetAdminScheduleRemindersIdResponse) GetJSON404() *string {
-	return r.JSON404
-}
-
-// GetJSON500 returns the response for an HTTP 500 `application/json` response
-func (r GetAdminScheduleRemindersIdResponse) GetJSON500() *string {
-	return r.JSON500
-}
-
-// GetBody returns the raw response body bytes
-func (r GetAdminScheduleRemindersIdResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAdminScheduleRemindersIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAdminScheduleRemindersIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetAdminScheduleRemindersIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -26798,75 +26405,6 @@ func (r DeleteAdminTeamsIdRolesRoleIdResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteAdminTeamsIdRolesRoleIdResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-type GetAdminTeamsIdRolesRoleIdResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *AdminRoleResponse
-	// JSON401 the response for an HTTP 401 `application/json` response
-	JSON401 *string
-	// JSON403 the response for an HTTP 403 `application/json` response
-	JSON403 *string
-	// JSON404 the response for an HTTP 404 `application/json` response
-	JSON404 *string
-	// JSON500 the response for an HTTP 500 `application/json` response
-	JSON500 *string
-}
-
-// GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAdminTeamsIdRolesRoleIdResponse) GetJSON200() *AdminRoleResponse {
-	return r.JSON200
-}
-
-// GetJSON401 returns the response for an HTTP 401 `application/json` response
-func (r GetAdminTeamsIdRolesRoleIdResponse) GetJSON401() *string {
-	return r.JSON401
-}
-
-// GetJSON403 returns the response for an HTTP 403 `application/json` response
-func (r GetAdminTeamsIdRolesRoleIdResponse) GetJSON403() *string {
-	return r.JSON403
-}
-
-// GetJSON404 returns the response for an HTTP 404 `application/json` response
-func (r GetAdminTeamsIdRolesRoleIdResponse) GetJSON404() *string {
-	return r.JSON404
-}
-
-// GetJSON500 returns the response for an HTTP 500 `application/json` response
-func (r GetAdminTeamsIdRolesRoleIdResponse) GetJSON500() *string {
-	return r.JSON500
-}
-
-// GetBody returns the raw response body bytes
-func (r GetAdminTeamsIdRolesRoleIdResponse) GetBody() []byte {
-	return r.Body
-}
-
-// Status returns HTTPResponse.Status
-func (r GetAdminTeamsIdRolesRoleIdResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetAdminTeamsIdRolesRoleIdResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
-func (r GetAdminTeamsIdRolesRoleIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -30949,6 +30487,75 @@ func (r PostIncidentsIdAdvanceResponse) ContentType() string {
 	return ""
 }
 
+type GetIncidentsIdOutboxResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *IncidentsOutboxListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *string
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *string
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *string
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *string
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetIncidentsIdOutboxResponse) GetJSON200() *IncidentsOutboxListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetIncidentsIdOutboxResponse) GetJSON400() *string {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetIncidentsIdOutboxResponse) GetJSON401() *string {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetIncidentsIdOutboxResponse) GetJSON403() *string {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetIncidentsIdOutboxResponse) GetJSON500() *string {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetIncidentsIdOutboxResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetIncidentsIdOutboxResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetIncidentsIdOutboxResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetIncidentsIdOutboxResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
 type PostIncidentsIdResolveResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -31281,6 +30888,75 @@ func (r PostIncidentsIdUnackResponse) StatusCode() int {
 
 // ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostIncidentsIdUnackResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+type GetIncidentsIdWebhooksResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *IncidentsWebhookListResponse
+	// JSON400 the response for an HTTP 400 `application/json` response
+	JSON400 *string
+	// JSON401 the response for an HTTP 401 `application/json` response
+	JSON401 *string
+	// JSON403 the response for an HTTP 403 `application/json` response
+	JSON403 *string
+	// JSON500 the response for an HTTP 500 `application/json` response
+	JSON500 *string
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetIncidentsIdWebhooksResponse) GetJSON200() *IncidentsWebhookListResponse {
+	return r.JSON200
+}
+
+// GetJSON400 returns the response for an HTTP 400 `application/json` response
+func (r GetIncidentsIdWebhooksResponse) GetJSON400() *string {
+	return r.JSON400
+}
+
+// GetJSON401 returns the response for an HTTP 401 `application/json` response
+func (r GetIncidentsIdWebhooksResponse) GetJSON401() *string {
+	return r.JSON401
+}
+
+// GetJSON403 returns the response for an HTTP 403 `application/json` response
+func (r GetIncidentsIdWebhooksResponse) GetJSON403() *string {
+	return r.JSON403
+}
+
+// GetJSON500 returns the response for an HTTP 500 `application/json` response
+func (r GetIncidentsIdWebhooksResponse) GetJSON500() *string {
+	return r.JSON500
+}
+
+// GetBody returns the raw response body bytes
+func (r GetIncidentsIdWebhooksResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetIncidentsIdWebhooksResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetIncidentsIdWebhooksResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetIncidentsIdWebhooksResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
@@ -32786,7 +32462,7 @@ func (c *ClientWithResponses) GetAdminMeTokensWithResponse(ctx context.Context, 
 
 // PostAdminMeTokensWithBodyWithResponse Create an API token
 //
-// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 //
 // Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
 //
@@ -32801,7 +32477,7 @@ func (c *ClientWithResponses) PostAdminMeTokensWithBodyWithResponse(ctx context.
 
 // PostAdminMeTokensWithResponse Create an API token
 //
-// Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
+// Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.
 //
 // Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
 //
@@ -32827,36 +32503,6 @@ func (c *ClientWithResponses) DeleteAdminMeTokensIdWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseDeleteAdminMeTokensIdResponse(rsp)
-}
-
-// PostAdminMeTokensIdReauthorizeWithResponse Re-authorize a legacy API token
-//
-// Self-service. Starts the same authentik consent round-trip as creation, but attaches the refresh token to an existing (pre-stage-2) token instead of minting a new one — the existing secret keeps working unchanged. 501 if stage 2 isn't configured on this install; 409 if the token is already authorized.
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with POST /admin/me/tokens/{id}/reauthorize (the `PostAdminMeTokensIdReauthorize` operationId).
-func (c *ClientWithResponses) PostAdminMeTokensIdReauthorizeWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*PostAdminMeTokensIdReauthorizeResponse, error) {
-	rsp, err := c.PostAdminMeTokensIdReauthorize(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParsePostAdminMeTokensIdReauthorizeResponse(rsp)
-}
-
-// GetAdminMeTokensIdRevealWithResponse Reveal a freshly-created API token's secret
-//
-// Self-service, one-time. Only valid for a few minutes after GET /auth/token-callback completes a stage-2 creation — see internal/apitoken's reveal cache. 410 once already revealed, expired, or never issued via this flow.
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/me/tokens/{id}/reveal (the `GetAdminMeTokensIdReveal` operationId).
-func (c *ClientWithResponses) GetAdminMeTokensIdRevealWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetAdminMeTokensIdRevealResponse, error) {
-	rsp, err := c.GetAdminMeTokensIdReveal(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAdminMeTokensIdRevealResponse(rsp)
 }
 
 // GetAdminMeTriggerPoliciesWithResponse List my trigger notification-policy routes
@@ -32934,21 +32580,6 @@ func (c *ClientWithResponses) DeleteAdminOverridesIdWithResponse(ctx context.Con
 	return ParseDeleteAdminOverridesIdResponse(rsp)
 }
 
-// GetAdminOverridesIdWithResponse Get override
-//
-// Requires team view role on the override's schedule (or admin).
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/overrides/{id} (the `GetAdminOverridesId` operationId).
-func (c *ClientWithResponses) GetAdminOverridesIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetAdminOverridesIdResponse, error) {
-	rsp, err := c.GetAdminOverridesId(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAdminOverridesIdResponse(rsp)
-}
-
 // GetAdminResourcesWithResponse List registered resources
 //
 // Returns all registered resource names and valid verbs. Used by the UI to render the permission grid.
@@ -32992,21 +32623,6 @@ func (c *ClientWithResponses) DeleteAdminScheduleRemindersIdWithResponse(ctx con
 		return nil, err
 	}
 	return ParseDeleteAdminScheduleRemindersIdResponse(rsp)
-}
-
-// GetAdminScheduleRemindersIdWithResponse Get a schedule shift reminder
-//
-// Requires schedule view access.
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/schedule-reminders/{id} (the `GetAdminScheduleRemindersId` operationId).
-func (c *ClientWithResponses) GetAdminScheduleRemindersIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetAdminScheduleRemindersIdResponse, error) {
-	rsp, err := c.GetAdminScheduleRemindersId(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAdminScheduleRemindersIdResponse(rsp)
 }
 
 // PutAdminScheduleRemindersIdWithBodyWithResponse Update a schedule shift reminder
@@ -33726,19 +33342,6 @@ func (c *ClientWithResponses) DeleteAdminTeamsIdRolesRoleIdWithResponse(ctx cont
 		return nil, err
 	}
 	return ParseDeleteAdminTeamsIdRolesRoleIdResponse(rsp)
-}
-
-// GetAdminTeamsIdRolesRoleIdWithResponse Get team role
-//
-// Returns a wrapper object for the known response body format(s).
-//
-// Corresponds with GET /admin/teams/{id}/roles/{roleId} (the `GetAdminTeamsIdRolesRoleId` operationId).
-func (c *ClientWithResponses) GetAdminTeamsIdRolesRoleIdWithResponse(ctx context.Context, id string, roleId string, reqEditors ...RequestEditorFn) (*GetAdminTeamsIdRolesRoleIdResponse, error) {
-	rsp, err := c.GetAdminTeamsIdRolesRoleId(ctx, id, roleId, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetAdminTeamsIdRolesRoleIdResponse(rsp)
 }
 
 // PutAdminTeamsIdRolesRoleIdWithBodyWithResponse Update team role
@@ -34968,6 +34571,21 @@ func (c *ClientWithResponses) PostIncidentsIdAdvanceWithResponse(ctx context.Con
 	return ParsePostIncidentsIdAdvanceResponse(rsp)
 }
 
+// GetIncidentsIdOutboxWithResponse List incident outbox messages
+//
+// Returns the notification outbox messages for an incident, oldest first, paginated.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /incidents/{id}/outbox (the `GetIncidentsIdOutbox` operationId).
+func (c *ClientWithResponses) GetIncidentsIdOutboxWithResponse(ctx context.Context, id string, params *GetIncidentsIdOutboxParams, reqEditors ...RequestEditorFn) (*GetIncidentsIdOutboxResponse, error) {
+	rsp, err := c.GetIncidentsIdOutbox(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetIncidentsIdOutboxResponse(rsp)
+}
+
 // PostIncidentsIdResolveWithBodyWithResponse Resolve an incident
 //
 // Transitions incident to 'resolved', cancels pending notifications, fires state_change targets.
@@ -35071,6 +34689,21 @@ func (c *ClientWithResponses) PostIncidentsIdUnackWithResponse(ctx context.Conte
 		return nil, err
 	}
 	return ParsePostIncidentsIdUnackResponse(rsp)
+}
+
+// GetIncidentsIdWebhooksWithResponse List incident webhooks
+//
+// Returns the incoming webhooks linked to an incident, oldest first, paginated.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /incidents/{id}/webhooks (the `GetIncidentsIdWebhooks` operationId).
+func (c *ClientWithResponses) GetIncidentsIdWebhooksWithResponse(ctx context.Context, id string, params *GetIncidentsIdWebhooksParams, reqEditors ...RequestEditorFn) (*GetIncidentsIdWebhooksResponse, error) {
+	rsp, err := c.GetIncidentsIdWebhooks(ctx, id, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetIncidentsIdWebhooksResponse(rsp)
 }
 
 // PostIngestIdWithBodyWithResponse Receive an incoming alert webhook
@@ -37455,13 +37088,6 @@ func ParsePostAdminMeTokensResponse(rsp *http.Response) (*PostAdminMeTokensRespo
 		}
 		response.JSON201 = &dest
 
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
-		var dest AdminPendingAPITokenResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON202 = &dest
-
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
 		var dest string
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
@@ -37539,114 +37165,6 @@ func ParseDeleteAdminMeTokensIdResponse(rsp *http.Response) (*DeleteAdminMeToken
 			return nil, err
 		}
 		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParsePostAdminMeTokensIdReauthorizeResponse parses an HTTP response from a PostAdminMeTokensIdReauthorizeWithResponse call
-func ParsePostAdminMeTokensIdReauthorizeResponse(rsp *http.Response) (*PostAdminMeTokensIdReauthorizeResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &PostAdminMeTokensIdReauthorizeResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
-		var dest AdminPendingAPITokenResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON202 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 409:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 501:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON501 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetAdminMeTokensIdRevealResponse parses an HTTP response from a GetAdminMeTokensIdRevealWithResponse call
-func ParseGetAdminMeTokensIdRevealResponse(rsp *http.Response) (*GetAdminMeTokensIdRevealResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAdminMeTokensIdRevealResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AdminCreateAPITokenResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 410:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON410 = &dest
 
 	}
 
@@ -37840,60 +37358,6 @@ func ParseDeleteAdminOverridesIdResponse(rsp *http.Response) (*DeleteAdminOverri
 	return response, nil
 }
 
-// ParseGetAdminOverridesIdResponse parses an HTTP response from a GetAdminOverridesIdWithResponse call
-func ParseGetAdminOverridesIdResponse(rsp *http.Response) (*GetAdminOverridesIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAdminOverridesIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AdminOverrideResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
 // ParseGetAdminResourcesResponse parses an HTTP response from a GetAdminResourcesWithResponse call
 func ParseGetAdminResourcesResponse(rsp *http.Response) (*GetAdminResourcesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -37983,60 +37447,6 @@ func ParseDeleteAdminScheduleRemindersIdResponse(rsp *http.Response) (*DeleteAdm
 	switch {
 	case rsp.StatusCode == 204:
 		break // No content-type
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetAdminScheduleRemindersIdResponse parses an HTTP response from a GetAdminScheduleRemindersIdWithResponse call
-func ParseGetAdminScheduleRemindersIdResponse(rsp *http.Response) (*GetAdminScheduleRemindersIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAdminScheduleRemindersIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AdminScheduleReminderJobResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
 		var dest string
@@ -39909,60 +39319,6 @@ func ParseDeleteAdminTeamsIdRolesRoleIdResponse(rsp *http.Response) (*DeleteAdmi
 			return nil, err
 		}
 		response.JSON409 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON500 = &dest
-
-	}
-
-	return response, nil
-}
-
-// ParseGetAdminTeamsIdRolesRoleIdResponse parses an HTTP response from a GetAdminTeamsIdRolesRoleIdWithResponse call
-func ParseGetAdminTeamsIdRolesRoleIdResponse(rsp *http.Response) (*GetAdminTeamsIdRolesRoleIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetAdminTeamsIdRolesRoleIdResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest AdminRoleResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON401 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON403 = &dest
-
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 404:
-		var dest string
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON404 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest string
@@ -43164,6 +42520,60 @@ func ParsePostIncidentsIdAdvanceResponse(rsp *http.Response) (*PostIncidentsIdAd
 	return response, nil
 }
 
+// ParseGetIncidentsIdOutboxResponse parses an HTTP response from a GetIncidentsIdOutboxWithResponse call
+func ParseGetIncidentsIdOutboxResponse(rsp *http.Response) (*GetIncidentsIdOutboxResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetIncidentsIdOutboxResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IncidentsOutboxListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostIncidentsIdResolveResponse parses an HTTP response from a PostIncidentsIdResolveWithResponse call
 func ParsePostIncidentsIdResolveResponse(rsp *http.Response) (*PostIncidentsIdResolveResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -43426,6 +42836,60 @@ func ParsePostIncidentsIdUnackResponse(rsp *http.Response) (*PostIncidentsIdUnac
 			return nil, err
 		}
 		response.JSON404 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetIncidentsIdWebhooksResponse parses an HTTP response from a GetIncidentsIdWebhooksWithResponse call
+func ParseGetIncidentsIdWebhooksResponse(rsp *http.Response) (*GetIncidentsIdWebhooksResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetIncidentsIdWebhooksResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest IncidentsWebhookListResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 403:
+		var dest string
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON403 = &dest
 
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
 		var dest string

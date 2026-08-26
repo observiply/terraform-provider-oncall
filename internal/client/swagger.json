@@ -14,10 +14,6 @@
             },
             "admin.apiTokenInventoryResponse": {
                 "properties": {
-                    "authorized": {
-                        "description": "Authorized is true once this token has a live authentik refresh token\nattached (plan/tfprovider-11-delegated-refresh.md stage 2). False marks\na legacy stage-1 token still resolving from the cached group snapshot —\nthe frontend uses this to show the re-authorize prompt.",
-                        "type": "boolean"
-                    },
                     "created_at": {
                         "type": "string"
                     },
@@ -50,10 +46,6 @@
             },
             "admin.apiTokenResponse": {
                 "properties": {
-                    "authorized": {
-                        "description": "Authorized is true once this token has a live authentik refresh token\nattached (plan/tfprovider-11-delegated-refresh.md stage 2). False marks\na legacy stage-1 token still resolving from the cached group snapshot —\nthe frontend uses this to show the re-authorize prompt.",
-                        "type": "boolean"
-                    },
                     "created_at": {
                         "type": "string"
                     },
@@ -184,10 +176,6 @@
             },
             "admin.createAPITokenResponse": {
                 "properties": {
-                    "authorized": {
-                        "description": "Authorized is true once this token has a live authentik refresh token\nattached (plan/tfprovider-11-delegated-refresh.md stage 2). False marks\na legacy stage-1 token still resolving from the cached group snapshot —\nthe frontend uses this to show the re-authorize prompt.",
-                        "type": "boolean"
-                    },
                     "created_at": {
                         "type": "string"
                     },
@@ -437,10 +425,6 @@
             },
             "admin.meResponse": {
                 "properties": {
-                    "api_token_stage2_available": {
-                        "description": "APITokenStage2Available is true when this install has provisioned the\ndelegated authentik provider (plan/tfprovider-11-delegated-refresh.md).\nThe frontend uses this to decide whether to show the re-authorize nag\non legacy tokens — showing it on an install that can never satisfy it\nwould just be a permanent, unactionable warning.",
-                        "type": "boolean"
-                    },
                     "is_admin": {
                         "type": "boolean"
                     },
@@ -652,14 +636,6 @@
                         "type": "string"
                     },
                     "user_id": {
-                        "type": "string"
-                    }
-                },
-                "type": "object"
-            },
-            "admin.pendingAPITokenResponse": {
-                "properties": {
-                    "authorize_url": {
                         "type": "string"
                     }
                 },
@@ -1387,12 +1363,21 @@
                     "id": {
                         "type": "string"
                     },
+                    "incoming_webhook_id": {
+                        "type": "string"
+                    },
                     "outbox": {
                         "items": {
                             "$ref": "#/components/schemas/incidents.outboxMessageResponse"
                         },
                         "type": "array",
                         "uniqueItems": false
+                    },
+                    "outbox_limit": {
+                        "type": "integer"
+                    },
+                    "outbox_total": {
+                        "type": "integer"
                     },
                     "owner_team_id": {
                         "type": "string"
@@ -1447,6 +1432,12 @@
                         },
                         "type": "array",
                         "uniqueItems": false
+                    },
+                    "webhooks_limit": {
+                        "type": "integer"
+                    },
+                    "webhooks_total": {
+                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -1493,6 +1484,9 @@
                         "type": "integer"
                     },
                     "id": {
+                        "type": "string"
+                    },
+                    "incoming_webhook_id": {
                         "type": "string"
                     },
                     "owner_team_id": {
@@ -1542,6 +1536,27 @@
                         "type": "string"
                     },
                     "vars": {}
+                },
+                "type": "object"
+            },
+            "incidents.outboxListResponse": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/incidents.outboxMessageResponse"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    },
+                    "limit": {
+                        "type": "integer"
+                    },
+                    "offset": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    }
                 },
                 "type": "object"
             },
@@ -1634,6 +1649,27 @@
                     "starts_at": {
                         "description": "StartsAt optionally schedules the silence to begin in the future (RFC3339).\nOmitted or in the past =\u003e begins immediately (current behavior).",
                         "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "incidents.webhookListResponse": {
+                "properties": {
+                    "items": {
+                        "items": {
+                            "$ref": "#/components/schemas/incidents.webhookSummary"
+                        },
+                        "type": "array",
+                        "uniqueItems": false
+                    },
+                    "limit": {
+                        "type": "integer"
+                    },
+                    "offset": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
                     }
                 },
                 "type": "object"
@@ -5797,7 +5833,7 @@
                 ]
             },
             "post": {
-                "description": "Self-service. When stage 2 (delegated refresh) is configured, returns an authorize_url to complete via the browser instead of the plaintext token — see GET /auth/token-callback and GET /admin/me/tokens/{id}/reveal. Otherwise returns the plaintext token exactly once, synchronously. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.",
+                "description": "Self-service. Returns the plaintext token exactly once — copy it now, it cannot be retrieved again. Default lifetime is 90 days; maximum is 365. Cannot be called by a caller who is themselves authenticated with an API token.",
                 "requestBody": {
                     "content": {
                         "application/json": {
@@ -5828,16 +5864,6 @@
                             }
                         },
                         "description": "Created"
-                    },
-                    "202": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/admin.pendingAPITokenResponse"
-                                }
-                            }
-                        },
-                        "description": "Accepted"
                     },
                     "400": {
                         "content": {
@@ -5956,160 +5982,6 @@
                     }
                 ],
                 "summary": "Revoke my API token",
-                "tags": [
-                    "api-tokens"
-                ]
-            }
-        },
-        "/admin/me/tokens/{id}/reauthorize": {
-            "post": {
-                "description": "Self-service. Starts the same authentik consent round-trip as creation, but attaches the refresh token to an existing (pre-stage-2) token instead of minting a new one — the existing secret keeps working unchanged. 501 if stage 2 isn't configured on this install; 409 if the token is already authorized.",
-                "parameters": [
-                    {
-                        "description": "Token UUID",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "202": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/admin.pendingAPITokenResponse"
-                                }
-                            }
-                        },
-                        "description": "Accepted"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "409": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Conflict"
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Internal Server Error"
-                    },
-                    "501": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Not Implemented"
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "summary": "Re-authorize a legacy API token",
-                "tags": [
-                    "api-tokens"
-                ]
-            }
-        },
-        "/admin/me/tokens/{id}/reveal": {
-            "get": {
-                "description": "Self-service, one-time. Only valid for a few minutes after GET /auth/token-callback completes a stage-2 creation — see internal/apitoken's reveal cache. 410 once already revealed, expired, or never issued via this flow.",
-                "parameters": [
-                    {
-                        "description": "Token UUID",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/admin.createAPITokenResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "410": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Gone"
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "summary": "Reveal a freshly-created API token's secret",
                 "tags": [
                     "api-tokens"
                 ]
@@ -6387,81 +6259,6 @@
                 "tags": [
                     "schedules"
                 ]
-            },
-            "get": {
-                "description": "Requires team view role on the override's schedule (or admin).",
-                "parameters": [
-                    {
-                        "description": "Override UUID",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/admin.overrideResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Internal Server Error"
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "summary": "Get override",
-                "tags": [
-                    "schedules"
-                ]
             }
         },
         "/admin/resources": {
@@ -6614,81 +6411,6 @@
                     }
                 ],
                 "summary": "Delete a schedule shift reminder",
-                "tags": [
-                    "shift-reminders"
-                ]
-            },
-            "get": {
-                "description": "Requires schedule view access.",
-                "parameters": [
-                    {
-                        "description": "Shift reminder UUID",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/admin.scheduleReminderJobResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Internal Server Error"
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "summary": "Get a schedule shift reminder",
                 "tags": [
                     "shift-reminders"
                 ]
@@ -9625,89 +9347,6 @@
                     }
                 ],
                 "summary": "Delete team role",
-                "tags": [
-                    "roles"
-                ]
-            },
-            "get": {
-                "parameters": [
-                    {
-                        "description": "Team UUID",
-                        "in": "path",
-                        "name": "id",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Role UUID",
-                        "in": "path",
-                        "name": "roleId",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/admin.roleResponse"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "401": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Not Found"
-                    },
-                    "500": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Internal Server Error"
-                    }
-                },
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "summary": "Get team role",
                 "tags": [
                     "roles"
                 ]
@@ -14864,6 +14503,99 @@
                 ]
             }
         },
+        "/incidents/{id}/outbox": {
+            "get": {
+                "description": "Returns the notification outbox messages for an incident, oldest first, paginated.",
+                "parameters": [
+                    {
+                        "description": "Incident UUID",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Page size (default 50, max 200)",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Rows to skip (default 0)",
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/incidents.outboxListResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "summary": "List incident outbox messages",
+                "tags": [
+                    "incidents"
+                ]
+            }
+        },
         "/incidents/{id}/resolve": {
             "post": {
                 "description": "Transitions incident to 'resolved', cancels pending notifications, fires state_change targets.",
@@ -15297,6 +15029,99 @@
                     }
                 ],
                 "summary": "Unacknowledge an incident",
+                "tags": [
+                    "incidents"
+                ]
+            }
+        },
+        "/incidents/{id}/webhooks": {
+            "get": {
+                "description": "Returns the incoming webhooks linked to an incident, oldest first, paginated.",
+                "parameters": [
+                    {
+                        "description": "Incident UUID",
+                        "in": "path",
+                        "name": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Page size (default 50, max 200)",
+                        "in": "query",
+                        "name": "limit",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "Rows to skip (default 0)",
+                        "in": "query",
+                        "name": "offset",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/incidents.webhookListResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Bad Request"
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "description": "Internal Server Error"
+                    }
+                },
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "summary": "List incident webhooks",
                 "tags": [
                     "incidents"
                 ]

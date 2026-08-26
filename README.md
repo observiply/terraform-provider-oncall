@@ -9,9 +9,10 @@ Status: all six resources and five data sources exist
 `terraform-registry-manifest.json`, `tfplugindocs`) is scaffolded, but this
 provider has **not been published to the public Terraform Registry yet** —
 see "Releasing" below for what's still required (a GPG key with an assigned
-owner, and provider-side acceptance tests per
-`tfprovider-09-testing.md`, which are not done). Until then, install it
-locally via `dev_overrides` (below).
+owner, plus a live acceptance run against the token-enabled oncall service).
+The provider-side acceptance and PII guard tests exist, but have not yet been
+run against that service. Until then, install it locally via `dev_overrides`
+(below).
 
 ## Layout
 
@@ -19,7 +20,7 @@ locally via `dev_overrides` (below).
 main.go                     provider server entrypoint (providerserver.Serve)
 internal/
   client/                   generated from oncall's docs/swagger.json — do not hand-edit
-    swagger.json            vendored copy, pinned; CI diffs it against oncall main
+    swagger.json            vendored copy, pinned to an intentional oncall contract update
     generate.go             //go:generate oapi-codegen directive
     client.gen.go           generated output
   provider/
@@ -55,9 +56,10 @@ golangci-lint run
 
 `internal/client/swagger.json` is a pinned copy of oncall's `docs/swagger.json`,
 not a live fetch — a silently-updated spec regenerating the client mid-PR is how
-you ship a provider that compiles and lies about the API it talks to. CI's
-`spec-drift` job diffs it against oncall `main` on every push/PR. To pick up an
-intentional oncall API change:
+you ship a provider that compiles and lies about the API it talks to. The oncall
+repository is private, so this public repository's CI cannot fetch its contract
+without a cross-repository credential. Update the vendored copy deliberately
+from a reviewed oncall checkout:
 
 ```bash
 cp /path/to/oncall/docs/swagger.json internal/client/swagger.json
@@ -170,10 +172,11 @@ oncall's `plan/`.
   generating it — rotating a published provider's signing key is a real
   operational chore, and "the person who set it up left" is the failure mode
   to avoid.
-- **Provider-side acceptance tests and the PII guard test**
-  (`tfprovider-09-testing.md`) — not started as of this writing. Don't
-  publish `v1.0.0` to the public registry ahead of these; a `v0.x` tag for
-  internal dogfooding via `dev_overrides` doesn't need them first.
+- **Run the existing provider-side acceptance tests and PII guard test**
+  against the token-enabled oncall service (`TF_ACC=1`, `ONCALL_ENDPOINT`,
+  `ONCALL_TOKEN`, and the demo seed fixtures are required). Don't
+  publish `v1.0.0` to the public registry until that live run passes; a `v0.x`
+  tag for internal dogfooding via `dev_overrides` doesn't need it first.
 
 Once a key exists and the registry app is set up: register the repo with the
 Terraform Registry (Publish → Provider), then `git tag vX.Y.Z && git push
@@ -183,7 +186,6 @@ Terraform Registry (Publish → Provider), then `git tag vX.Y.Z && git push
 
 - `build`: `go generate` (fails the build if the committed `client.gen.go` is
   stale relative to `swagger.json`), `go build`, `go vet`, `golangci-lint`.
-- `spec-drift`: diffs the vendored `swagger.json` against oncall `main`.
 - `docs-drift`: fails if `docs/` is stale relative to schema descriptions and
   `examples/`.
 - `tofu-fmt`: `tofu fmt -check -recursive examples/`.
