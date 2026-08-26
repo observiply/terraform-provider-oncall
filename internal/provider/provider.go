@@ -203,11 +203,24 @@ func (p *OncallProvider) Configure(ctx context.Context, req provider.ConfigureRe
 }
 
 func (p *OncallProvider) Resources(_ context.Context) []func() resource.Resource {
-	return []func() resource.Resource{}
+	return []func() resource.Resource{
+		newScheduleResource,
+		newScheduleLayerResource,
+		newScheduleNotificationPolicyResource,
+		newTriggerResource,
+		newTriggerTargetsResource,
+		newIntegrationResource,
+	}
 }
 
 func (p *OncallProvider) DataSources(_ context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		newTeamDataSource,
+		newTeamsDataSource,
+		newRolesDataSource,
+		newResourcesDataSource,
+		newTeamMembersDataSource,
+	}
 }
 
 // valueOrEnv returns the configured attribute value if set, else falls back to

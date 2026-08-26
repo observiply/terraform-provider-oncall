@@ -60,6 +60,17 @@ linters:
         - diagnostic
         - style
         - performance
+      disabled-checks:
+        # hugeParam fires on every Create/Read/Update/Delete/Configure method
+        # in internal/provider: terraform-plugin-framework's resource.Resource
+        # and datasource.DataSource interfaces mandate these by-value request
+        # struct params, so there's no fix available at the call site.
+        - hugeParam
+        # ptrToRefParam fires on the jsontypes.Normalized <-> *map[string]any
+        # helpers in resource_integration.go, where the pointer is load-bearing:
+        # it's what lets a nil map (API omitted the field) be told apart from
+        # an empty one, matching the generated client's own field type.
+        - ptrToRefParam
 
 formatters:
   enable:

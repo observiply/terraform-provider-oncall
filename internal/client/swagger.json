@@ -536,6 +536,38 @@
                 },
                 "type": "object"
             },
+            "admin.notifStepResponse": {
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "integration_id": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "type": "integer"
+                    },
+                    "repeat_count": {
+                        "type": "integer"
+                    },
+                    "schedule_id": {
+                        "type": "string"
+                    },
+                    "step_type": {
+                        "type": "string"
+                    },
+                    "tier": {
+                        "type": "integer"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    },
+                    "wait_after_seconds": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
             "admin.notificationPolicyBody": {
                 "properties": {
                     "name": {
@@ -7380,7 +7412,7 @@
                             "application/json": {
                                 "schema": {
                                     "items": {
-                                        "type": "object"
+                                        "$ref": "#/components/schemas/admin.notifStepResponse"
                                     },
                                     "type": "array"
                                 }
@@ -7480,7 +7512,7 @@
                             "application/json": {
                                 "schema": {
                                     "items": {
-                                        "type": "object"
+                                        "$ref": "#/components/schemas/admin.notifStepResponse"
                                     },
                                     "type": "array"
                                 }

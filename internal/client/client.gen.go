@@ -272,6 +272,19 @@ type AdminNotifStepBody struct {
 	WaitAfterSeconds *int    `json:"wait_after_seconds,omitempty"`
 }
 
+// AdminNotifStepResponse defines model for admin.notifStepResponse.
+type AdminNotifStepResponse struct {
+	Id               *string `json:"id,omitempty"`
+	IntegrationId    *string `json:"integration_id,omitempty"`
+	Position         *int    `json:"position,omitempty"`
+	RepeatCount      *int    `json:"repeat_count,omitempty"`
+	ScheduleId       *string `json:"schedule_id,omitempty"`
+	StepType         *string `json:"step_type,omitempty"`
+	Tier             *int    `json:"tier,omitempty"`
+	UserId           *string `json:"user_id,omitempty"`
+	WaitAfterSeconds *int    `json:"wait_after_seconds,omitempty"`
+}
+
 // AdminNotificationPolicyBody defines model for admin.notificationPolicyBody.
 type AdminNotificationPolicyBody struct {
 	Name *string `json:"name,omitempty"`
@@ -25008,7 +25021,7 @@ type GetAdminSchedulesIdNotificationPolicyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *[]map[string]interface{}
+	JSON200 *[]AdminNotifStepResponse
 	// JSON401 the response for an HTTP 401 `application/json` response
 	JSON401 *string
 	// JSON403 the response for an HTTP 403 `application/json` response
@@ -25020,7 +25033,7 @@ type GetAdminSchedulesIdNotificationPolicyResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r GetAdminSchedulesIdNotificationPolicyResponse) GetJSON200() *[]map[string]interface{} {
+func (r GetAdminSchedulesIdNotificationPolicyResponse) GetJSON200() *[]AdminNotifStepResponse {
 	return r.JSON200
 }
 
@@ -25077,7 +25090,7 @@ type PutAdminSchedulesIdNotificationPolicyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 	// JSON200 the response for an HTTP 200 `application/json` response
-	JSON200 *[]map[string]interface{}
+	JSON200 *[]AdminNotifStepResponse
 	// JSON400 the response for an HTTP 400 `application/json` response
 	JSON400 *string
 	// JSON401 the response for an HTTP 401 `application/json` response
@@ -25091,7 +25104,7 @@ type PutAdminSchedulesIdNotificationPolicyResponse struct {
 }
 
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-func (r PutAdminSchedulesIdNotificationPolicyResponse) GetJSON200() *[]map[string]interface{} {
+func (r PutAdminSchedulesIdNotificationPolicyResponse) GetJSON200() *[]AdminNotifStepResponse {
 	return r.JSON200
 }
 
@@ -38515,7 +38528,7 @@ func ParseGetAdminSchedulesIdNotificationPolicyResponse(rsp *http.Response) (*Ge
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []map[string]interface{}
+		var dest []AdminNotifStepResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -38569,7 +38582,7 @@ func ParsePutAdminSchedulesIdNotificationPolicyResponse(rsp *http.Response) (*Pu
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []map[string]interface{}
+		var dest []AdminNotifStepResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
