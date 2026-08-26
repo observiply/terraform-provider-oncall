@@ -11,6 +11,16 @@ resource "oncall_integration" "slack" {
     text = "{{ .title }}"
   })
 
-  # The integration's outbound auth secret (e.g. a signing key) is set via a
-  # write-only attribute added in tfprovider-08, not here.
+  # Outbound auth secret (e.g. a signing key), sent via a write-only
+  # attribute — never stored in state and never read back from the API.
+  # Bump secret_wo_version to rotate it; changing secret_wo alone does
+  # nothing, since the provider has nothing to diff it against.
+  auth_method       = "bearer"
+  secret_wo         = var.slack_signing_key
+  secret_wo_version = 1
+}
+
+variable "slack_signing_key" {
+  type      = string
+  sensitive = true
 }

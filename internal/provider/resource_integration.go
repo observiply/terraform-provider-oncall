@@ -10,6 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework-jsontypes/jsontypes"
 	"github.com/hashicorp/terraform-plugin-framework-timeouts/resource/timeouts"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -19,6 +20,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringdefault"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
+	"github.com/hashicorp/terraform-plugin-framework/tfsdk"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 
 	"github.com/observiply/terraform-provider-oncall/internal/client"
@@ -56,6 +58,8 @@ type integrationResourceModel struct {
 	AuthMethod              types.String         `tfsdk:"auth_method"`
 	HasSecret               types.Bool           `tfsdk:"has_secret"`
 	OwnerUserID             types.String         `tfsdk:"owner_user_id"`
+	SecretWO                types.String         `tfsdk:"secret_wo"`
+	SecretWOVersion         types.Int64          `tfsdk:"secret_wo_version"`
 	Timeouts                timeouts.Value       `tfsdk:"timeouts"`
 }
 
@@ -67,8 +71,9 @@ func (r *integrationResource) Schema(ctx context.Context, _ resource.SchemaReque
 	resp.Schema = schema.Schema{
 		Description: "Manages an oncall integration, an outbound notification target " +
 			"(e.g. a webhook) referenced by trigger targets and notification policy steps. " +
-			"The integration's secret (tfprovider-08) is not managed by this resource; " +
-			"has_secret only reports whether one is currently set.",
+			"The integration's secret is set via secret_wo/secret_wo_version, a write-only " +
+			"attribute pair (Terraform >= 1.11) — the API never returns it, so has_secret " +
+			"only reports whether one is currently set.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:      true,
@@ -169,6 +174,16 @@ func (r *integrationResource) Schema(ctx context.Context, _ resource.SchemaReque
 			"owner_user_id": schema.StringAttribute{
 				Computed:    true,
 				Description: "Set instead of a team owner for a personal integration; always null for integrations created through this resource.",
+			},
+			"secret_wo": schema.StringAttribute{
+				Optional:    true,
+				WriteOnly:   true,
+				Description: "Outbound auth secret for auth_method=bearer/basic. Never read back from the API and never persisted to state; bump secret_wo_version to send a new value.",
+			},
+			"secret_wo_version": schema.Int64Attribute{
+				Optional: true,
+				Description: "Bump this to re-send secret_wo. The API has no way to read a secret back, so this " +
+					"is the only signal the provider has that the value changed; changing secret_wo alone does nothing.",
 			},
 		},
 		Blocks: map[string]schema.Block{
@@ -299,6 +314,7 @@ func (r *integrationResource) Create(ctx context.Context, req resource.CreateReq
 	state.TeamIDs = finalSet
 	state.VisibleToAllTeams = boolFromPtr(sharingResp.JSON200.VisibleToAllTeams)
 
+	resp.Diagnostics.Append(r.syncSecret(ctx, req.Config, integrationID, plan.SecretWOVersion, types.Int64Null(), &state)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &state)...)
 }
 
@@ -336,6 +352,9 @@ func (r *integrationResource) Read(ctx context.Context, req resource.ReadRequest
 	teamSet, d := stringsToSet(ctx, derefStrSlice(getResp.JSON200.TeamIds))
 	resp.Diagnostics.Append(d...)
 	newState.TeamIDs = teamSet
+	// secret_wo is never returned by GET; secret_wo_version has no server-side
+	// counterpart to reconcile against, so it just carries forward from state.
+	newState.SecretWOVersion = state.SecretWOVersion
 
 	sharingResp, err := r.client.GetAdminIntegrationsIdTeamsWithResponse(ctx, id)
 	if err != nil {
@@ -446,7 +465,48 @@ func (r *integrationResource) Update(ctx context.Context, req resource.UpdateReq
 	newState.TeamIDs = finalSet
 	newState.VisibleToAllTeams = boolFromPtr(sharingResp.JSON200.VisibleToAllTeams)
 
+	resp.Diagnostics.Append(r.syncSecret(ctx, req.Config, id, plan.SecretWOVersion, state.SecretWOVersion, &newState)...)
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
+}
+
+// syncSecret sends secret_wo to PUT /admin/integrations/{id}/secret when
+// wantVersion differs from haveVersion — the only signal the provider has
+// that the write-only value changed, since the API never returns it to diff
+// against. On success it updates state's has_secret/secret_wo_version; on
+// failure it returns a diagnostic and leaves state untouched so the caller
+// still persists whatever else succeeded this apply.
+func (r *integrationResource) syncSecret(ctx context.Context, cfg tfsdk.Config, id string, wantVersion, haveVersion types.Int64, state *integrationResourceModel) diag.Diagnostics {
+	var diags diag.Diagnostics
+	if wantVersion.IsNull() || wantVersion.Equal(haveVersion) {
+		return diags
+	}
+
+	var cfgModel integrationResourceModel
+	diags.Append(cfg.Get(ctx, &cfgModel)...)
+	if diags.HasError() {
+		return diags
+	}
+
+	body, err := newBody((*client.PutAdminIntegrationsIdSecretJSONBody).FromIntegrationsSetSecretBody, client.IntegrationsSetSecretBody{
+		Secret: cfgModel.SecretWO.ValueStringPointer(),
+	})
+	if err != nil {
+		diags.AddError("Unable to encode integration secret request", err.Error())
+		return diags
+	}
+	secretResp, err := r.client.PutAdminIntegrationsIdSecretWithResponse(ctx, id, client.PutAdminIntegrationsIdSecretJSONRequestBody(body))
+	if err != nil {
+		diags.AddError("Unable to set integration secret", err.Error())
+		return diags
+	}
+	if secretResp.StatusCode() != http.StatusNoContent {
+		diags.Append(unexpectedStatus("Unable to set integration secret", "PUT", "/admin/integrations/"+id+"/secret", secretResp.StatusCode(), secretResp.Body))
+		return diags
+	}
+
+	state.HasSecret = types.BoolValue(true)
+	state.SecretWOVersion = wantVersion
+	return diags
 }
 
 func (r *integrationResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {

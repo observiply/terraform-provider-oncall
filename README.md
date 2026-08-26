@@ -98,6 +98,44 @@ provider "oncall" {
   credential problems surface as one clear error instead of N confusing
   per-resource failures. 401 vs 403 vs 503 are distinguished — see
   `internal/provider/provider.go`.
+- The token is **scoped to oncall** (not authentik or any other Observiply
+  product) and **expires** (90 days by default, 365 max) — both bound the
+  blast radius of a leak, but neither makes it acceptable. See oncall's admin
+  token inventory for expiring-soon tokens, and rotate before a pipeline finds
+  out at 3am: issue a new token, update the CI secret, verify a plan, then
+  revoke the old one.
+
+## Secrets
+
+`terraform.tfstate` is not a safe place for the values the oncall API only
+ever accepts and never returns — `oncall_integration`'s outbound auth secret
+chief among them. This provider uses Terraform's **write-only attributes**
+(`secret_wo` / `secret_wo_version` on `oncall_integration`) for that value:
+the secret is available during `apply` but is never written to state or plan
+files. The paired `_version` integer is the only thing the provider can diff
+against, since the API never echoes the secret back — bump it to send a new
+value; changing `secret_wo` alone does nothing.
+
+**Requires Terraform or OpenTofu >= 1.11** (declared in
+`examples/provider/provider.tf`) — write-only attributes are not available on
+older CLI versions.
+
+Trigger ingest tokens are handled differently, deliberately: `oncall_trigger`
+exposes `token` as an ordinary (if `Sensitive`) computed attribute, populated
+once from the one-time create response and never re-fetched or rotated by
+this provider. `POST /admin/triggers/{id}/rotate-token` also returns its
+value exactly once, so unlike the integration secret there is no way to model
+rotation without a value landing in state somewhere — this provider does not
+try. Rotate trigger tokens out-of-band (the oncall UI, or a one-off script);
+if you want it in Terraform anyway, `terraform_data` with a `local-exec`
+provisioner works, having made an explicit choice to put a secret in state.
+See `tfprovider-08-secrets-and-rotation.md` in oncall's `plan/` for the full
+reasoning.
+
+Even with every secret excluded, state still holds real on-call topology —
+schedule names, team ids, user ids, trigger templates. Nothing PII (oncall's
+API redacts that at the boundary), but treat it accordingly: use a remote
+backend with encryption for anything beyond a local test.
 
 ## CI
 

@@ -154,7 +154,10 @@ func (r *triggerResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 				},
 				Description: "One-time bearer token for auth_method=bearer, returned only at " +
 					"creation and never re-readable from the API. Empty for auth_method=none. " +
-					"Rotating it (tfprovider-08) is not yet supported by this resource.",
+					"This resource does not rotate it — POST .../rotate-token also returns its " +
+					"value exactly once, so unlike the integration secret there is no way to " +
+					"manage rotation without landing a value in state; rotate out-of-band " +
+					"instead (see tfprovider-08-secrets-and-rotation.md).",
 			},
 		},
 		Blocks: map[string]schema.Block{

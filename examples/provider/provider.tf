@@ -1,4 +1,8 @@
 terraform {
+  # >= 1.11 for write-only attributes (oncall_integration's secret_wo), see
+  # tfprovider-08-secrets-and-rotation.md in oncall's plan/.
+  required_version = ">= 1.11"
+
   required_providers {
     oncall = {
       source = "observiply/oncall"
