@@ -75,6 +75,79 @@ func TestAccIntegrationResource_SecretWriteOnly(t *testing.T) {
 	})
 }
 
+// TestAccIntegrationResource_CRUD covers tfprovider-09-testing.md's four
+// minimum acceptance-test criteria for oncall_integration in general
+// (create, update in place, import-verify, empty plan) — as opposed to
+// TestAccIntegrationResource_SecretWriteOnly above, which is scoped
+// narrowly to the write-only secret_wo/secret_wo_version path. This test
+// never sets secret_wo, so has_secret stays false throughout and
+// ImportStateVerify needs no ignores.
+func TestAccIntegrationResource_CRUD(t *testing.T) {
+	resourceAddr := "oncall_integration.crud_test"
+	var integrationID string
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: protoV6ProviderFactories,
+		CheckDestroy:             testAccCheckIntegrationDestroyed(t, &integrationID),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccIntegrationCRUDConfig("tfacc-integration", "initial description", "https://example.com/hook", true),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccCheckIDCaptured(resourceAddr, &integrationID),
+					resource.TestCheckResourceAttr(resourceAddr, "name", "tfacc-integration"),
+					resource.TestCheckResourceAttr(resourceAddr, "description", "initial description"),
+					resource.TestCheckResourceAttr(resourceAddr, "kind", "webhook"),
+					resource.TestCheckResourceAttr(resourceAddr, "enabled", "true"),
+					resource.TestCheckResourceAttr(resourceAddr, "url", "https://example.com/hook"),
+					resource.TestCheckResourceAttr(resourceAddr, "http_method", "POST"),
+					resource.TestCheckResourceAttr(resourceAddr, "has_secret", "false"),
+					resource.TestCheckResourceAttrPair(resourceAddr, "owner_team_id", "data.oncall_team.demo_platform", "id"),
+				),
+			},
+			{
+				// Update in place: description/url/enabled change;
+				// owner_team_id (RequiresReplace) does not, so id is
+				// unchanged.
+				Config: testAccIntegrationCRUDConfig("tfacc-integration", "updated description", "https://example.com/hook-v2", false),
+				Check: resource.ComposeAggregateTestCheckFunc(
+					testAccCheckIDUnchanged(resourceAddr, &integrationID),
+					resource.TestCheckResourceAttr(resourceAddr, "description", "updated description"),
+					resource.TestCheckResourceAttr(resourceAddr, "url", "https://example.com/hook-v2"),
+					resource.TestCheckResourceAttr(resourceAddr, "enabled", "false"),
+				),
+			},
+			{
+				// Perpetual-diff guard.
+				Config:   testAccIntegrationCRUDConfig("tfacc-integration", "updated description", "https://example.com/hook-v2", false),
+				PlanOnly: true,
+			},
+			{
+				ResourceName:      resourceAddr,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func testAccIntegrationCRUDConfig(name, description, url string, enabled bool) string {
+	return fmt.Sprintf(`
+data "oncall_team" "demo_platform" {
+  name = "Demo Platform"
+}
+
+resource "oncall_integration" "crud_test" {
+  name          = %q
+  description   = %q
+  kind          = "webhook"
+  owner_team_id = data.oncall_team.demo_platform.id
+  url           = %q
+  enabled       = %t
+}
+`, name, description, url, enabled)
+}
+
 func testAccIntegrationSecretConfig(secret string, version int) string {
 	return fmt.Sprintf(`
 data "oncall_teams" "all" {}
