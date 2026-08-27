@@ -77,7 +77,7 @@ go test ./...            # unit tests
 
 ### Acceptance tests
 
-Drive a real `tofu` binary against a live oncall instance. The token must belong to an oncall admin (member of `ONCALL_ADMIN_GROUP` — `oncall_demo10` in the demo seed); the suite manages the seeded "Demo Platform" team.
+The token must belong to an oncall admin; the suite manages the seeded "Demo Platform" team.
 
 ```bash
 TF_ACC=1 \
@@ -100,9 +100,6 @@ git add internal/client/swagger.json internal/client/client.gen.go
 CI's `spec-drift` diffs it against oncall `main`.
 
 ## Releasing
-
-`.github/workflows/release.yml` runs GoReleaser on any `v*` tag push. Before the first real tag: resolve GPG signing and get acceptance tests green.
-
 ```bash
 git tag vX.Y.Z && git push --tags
 ```
