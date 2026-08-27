@@ -51,6 +51,49 @@ go vet ./...
 golangci-lint run
 ```
 
+## Testing
+
+Unit tests need nothing:
+
+```bash
+go test ./...
+```
+
+Acceptance tests (`TestAcc*`, including the PII guard) drive a real `tofu`
+binary against a live oncall instance, so they need `TF_ACC=1`, an endpoint,
+and a token. The token must belong to an **oncall admin** (a member of
+`ONCALL_ADMIN_GROUP` — `oncall_demo10` in the demo seed): the suite reads
+`GET /admin/teams/{id}/group-members` and manages resources on the seeded
+"Demo Platform" team, both of which 403 for a non-admin caller who isn't a
+member of that team. Log in as `oncall_demo10` once (to claim the
+pre-provisioned seed row), then mint the `oncall_pat_...` token from
+Settings → API tokens.
+
+```bash
+TF_ACC=1 \
+TF_ACC_PROVIDER_NAMESPACE=hashicorp \
+ONCALL_ENDPOINT=https://oncall.example.com \
+ONCALL_TOKEN=oncall_pat_... \
+  go test ./internal/provider/... -run TestAcc -v -timeout 20m
+```
+
+`TF_ACC_PROVIDER_NAMESPACE` is **required when the CLI is OpenTofu**. Without
+it, terraform-plugin-testing registers the in-process provider under the
+legacy `registry.terraform.io/-/oncall` reattach address (Terraform 0.12/0.13
+back-compat). OpenTofu rejects the `-` namespace for any host other than
+`registry.opentofu.org` and then panics formatting the failed parse —
+
+```
+Error parsing %!q(PANIC=String method: called String on zero-value
+addrs.Provider) as a provider address: Invalid provider namespace: The
+legacy provider namespace "-" can be used only with hostname
+registry.opentofu.org.
+```
+
+Setting the namespace to `hashicorp` (what a bare `oncall` reference resolves
+to in a config with no `terraform {}` block) suppresses the `-` entry and the
+reattach lookup still matches.
+
 ## Updating the vendored API spec
 
 `internal/client/swagger.json` is a pinned copy of oncall's `docs/swagger.json`,
@@ -163,17 +206,10 @@ oncall's `plan/`.
 
 **Not yet done, and required before the first real tag:**
 
-- **A GPG signing key, with an owner.** The private key and passphrase go in
-  this repo's `GPG_PRIVATE_KEY` / `PASSPHRASE` Actions secrets; the public
-  half is uploaded to the Terraform Registry account that publishes this
-  provider. Decide who holds the private key and how it's rotated *before*
-  generating it — rotating a published provider's signing key is a real
-  operational chore, and "the person who set it up left" is the failure mode
-  to avoid.
 - **Provider-side acceptance tests and the PII guard test**
-  (`tfprovider-09-testing.md`) — not started as of this writing. Don't
-  publish `v1.0.0` to the public registry ahead of these; a `v0.x` tag for
-  internal dogfooding via `dev_overrides` doesn't need them first.
+  (`tfprovider-09-testing.md`) — in progress (see [Testing](#testing)). Don't
+  publish `v1.0.0` to the public registry until these are green; a `v0.x` tag
+  for internal dogfooding via `dev_overrides` doesn't need them first.
 
 Once a key exists and the registry app is set up: register the repo with the
 Terraform Registry (Publish → Provider), then `git tag vX.Y.Z && git push

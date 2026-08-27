@@ -196,24 +196,24 @@ type AdminGroupMemberResponse struct {
 
 // AdminLayerBody defines model for admin.layerBody.
 type AdminLayerBody struct {
-	EndAt          *string `json:"end_at,omitempty"`
-	HandoffAt      *string `json:"handoff_at,omitempty"`
-	Name           *string `json:"name,omitempty"`
-	RotationLength *string `json:"rotation_length,omitempty"`
-	StartAt        *string `json:"start_at,omitempty"`
-	Tier           *int    `json:"tier,omitempty"`
+	EndAt          *string   `json:"end_at,omitempty"`
+	HandoffAt      *string   `json:"handoff_at,omitempty"`
+	Name           *string   `json:"name,omitempty"`
+	RotationLength *Interval `json:"rotation_length,omitempty"`
+	StartAt        *string   `json:"start_at,omitempty"`
+	Tier           *int      `json:"tier,omitempty"`
 }
 
 // AdminLayerResp defines model for admin.layerResp.
 type AdminLayerResp struct {
-	EndAt          *string `json:"end_at,omitempty"`
-	HandoffAt      *string `json:"handoff_at,omitempty"`
-	Id             *string `json:"id,omitempty"`
-	Name           *string `json:"name,omitempty"`
-	RotationLength *string `json:"rotation_length,omitempty"`
-	ScheduleId     *string `json:"schedule_id,omitempty"`
-	StartAt        *string `json:"start_at,omitempty"`
-	Tier           *int    `json:"tier,omitempty"`
+	EndAt          *string   `json:"end_at,omitempty"`
+	HandoffAt      *string   `json:"handoff_at,omitempty"`
+	Id             *string   `json:"id,omitempty"`
+	Name           *string   `json:"name,omitempty"`
+	RotationLength *Interval `json:"rotation_length,omitempty"`
+	ScheduleId     *string   `json:"schedule_id,omitempty"`
+	StartAt        *string   `json:"start_at,omitempty"`
+	Tier           *int      `json:"tier,omitempty"`
 }
 
 // AdminLayerWithMembers defines model for admin.layerWithMembers.
@@ -223,7 +223,7 @@ type AdminLayerWithMembers struct {
 	Id             *string            `json:"id,omitempty"`
 	Members        *[]AdminMemberResp `json:"members,omitempty"`
 	Name           *string            `json:"name,omitempty"`
-	RotationLength *string            `json:"rotation_length,omitempty"`
+	RotationLength *Interval          `json:"rotation_length,omitempty"`
 	ScheduleId     *string            `json:"schedule_id,omitempty"`
 	StartAt        *string            `json:"start_at,omitempty"`
 	Tier           *int               `json:"tier,omitempty"`
@@ -486,11 +486,11 @@ type AdminUpdateGroupMappingBody struct {
 
 // AdminUpdateLayerBody defines model for admin.updateLayerBody.
 type AdminUpdateLayerBody struct {
-	EndAt          *string `json:"end_at,omitempty"`
-	HandoffAt      *string `json:"handoff_at,omitempty"`
-	Name           *string `json:"name,omitempty"`
-	RotationLength *string `json:"rotation_length,omitempty"`
-	StartAt        *string `json:"start_at,omitempty"`
+	EndAt          *string   `json:"end_at,omitempty"`
+	HandoffAt      *string   `json:"handoff_at,omitempty"`
+	Name           *string   `json:"name,omitempty"`
+	RotationLength *Interval `json:"rotation_length,omitempty"`
+	StartAt        *string   `json:"start_at,omitempty"`
 }
 
 // AdminUpdateScheduleBody defines model for admin.updateScheduleBody.
@@ -1783,196 +1783,196 @@ type PostTwilioVoiceIncidentIDContactMethodIDFormdataBody = struct {
 }
 
 // PutAdminContactMethodsIdJSONRequestBody defines body for PutAdminContactMethodsId for application/json ContentType.
-type PutAdminContactMethodsIdJSONRequestBody PutAdminContactMethodsIdJSONBody
+type PutAdminContactMethodsIdJSONRequestBody = PutAdminContactMethodsIdJSONBody
 
 // PutAdminIntegrationsIdJSONRequestBody defines body for PutAdminIntegrationsId for application/json ContentType.
-type PutAdminIntegrationsIdJSONRequestBody PutAdminIntegrationsIdJSONBody
+type PutAdminIntegrationsIdJSONRequestBody = PutAdminIntegrationsIdJSONBody
 
 // PutAdminIntegrationsIdSecretJSONRequestBody defines body for PutAdminIntegrationsIdSecret for application/json ContentType.
-type PutAdminIntegrationsIdSecretJSONRequestBody PutAdminIntegrationsIdSecretJSONBody
+type PutAdminIntegrationsIdSecretJSONRequestBody = PutAdminIntegrationsIdSecretJSONBody
 
 // PutAdminIntegrationsIdTeamsJSONRequestBody defines body for PutAdminIntegrationsIdTeams for application/json ContentType.
-type PutAdminIntegrationsIdTeamsJSONRequestBody PutAdminIntegrationsIdTeamsJSONBody
+type PutAdminIntegrationsIdTeamsJSONRequestBody = PutAdminIntegrationsIdTeamsJSONBody
 
 // PostAdminIntegrationsIdTestJSONRequestBody defines body for PostAdminIntegrationsIdTest for application/json ContentType.
-type PostAdminIntegrationsIdTestJSONRequestBody PostAdminIntegrationsIdTestJSONBody
+type PostAdminIntegrationsIdTestJSONRequestBody = PostAdminIntegrationsIdTestJSONBody
 
 // PostAdminIntegrationsIdTestSendJSONRequestBody defines body for PostAdminIntegrationsIdTestSend for application/json ContentType.
-type PostAdminIntegrationsIdTestSendJSONRequestBody PostAdminIntegrationsIdTestSendJSONBody
+type PostAdminIntegrationsIdTestSendJSONRequestBody = PostAdminIntegrationsIdTestSendJSONBody
 
 // PutAdminLayersIdJSONRequestBody defines body for PutAdminLayersId for application/json ContentType.
-type PutAdminLayersIdJSONRequestBody PutAdminLayersIdJSONBody
+type PutAdminLayersIdJSONRequestBody = PutAdminLayersIdJSONBody
 
 // PutAdminLayersIdMembersJSONRequestBody defines body for PutAdminLayersIdMembers for application/json ContentType.
-type PutAdminLayersIdMembersJSONRequestBody PutAdminLayersIdMembersJSONBody
+type PutAdminLayersIdMembersJSONRequestBody = PutAdminLayersIdMembersJSONBody
 
 // PutAdminLayersIdRestrictionsJSONRequestBody defines body for PutAdminLayersIdRestrictions for application/json ContentType.
-type PutAdminLayersIdRestrictionsJSONRequestBody PutAdminLayersIdRestrictionsJSONBody
+type PutAdminLayersIdRestrictionsJSONRequestBody = PutAdminLayersIdRestrictionsJSONBody
 
 // PostAdminMeIntegrationsJSONRequestBody defines body for PostAdminMeIntegrations for application/json ContentType.
-type PostAdminMeIntegrationsJSONRequestBody PostAdminMeIntegrationsJSONBody
+type PostAdminMeIntegrationsJSONRequestBody = PostAdminMeIntegrationsJSONBody
 
 // PutAdminMeIntegrationsIdJSONRequestBody defines body for PutAdminMeIntegrationsId for application/json ContentType.
-type PutAdminMeIntegrationsIdJSONRequestBody PutAdminMeIntegrationsIdJSONBody
+type PutAdminMeIntegrationsIdJSONRequestBody = PutAdminMeIntegrationsIdJSONBody
 
 // PutAdminMeIntegrationsIdSecretJSONRequestBody defines body for PutAdminMeIntegrationsIdSecret for application/json ContentType.
-type PutAdminMeIntegrationsIdSecretJSONRequestBody PutAdminMeIntegrationsIdSecretJSONBody
+type PutAdminMeIntegrationsIdSecretJSONRequestBody = PutAdminMeIntegrationsIdSecretJSONBody
 
 // PostAdminMeIntegrationsIdTestJSONRequestBody defines body for PostAdminMeIntegrationsIdTest for application/json ContentType.
-type PostAdminMeIntegrationsIdTestJSONRequestBody PostAdminMeIntegrationsIdTestJSONBody
+type PostAdminMeIntegrationsIdTestJSONRequestBody = PostAdminMeIntegrationsIdTestJSONBody
 
 // PostAdminMeIntegrationsIdTestSendJSONRequestBody defines body for PostAdminMeIntegrationsIdTestSend for application/json ContentType.
-type PostAdminMeIntegrationsIdTestSendJSONRequestBody PostAdminMeIntegrationsIdTestSendJSONBody
+type PostAdminMeIntegrationsIdTestSendJSONRequestBody = PostAdminMeIntegrationsIdTestSendJSONBody
 
 // PostAdminMeNotificationPoliciesJSONRequestBody defines body for PostAdminMeNotificationPolicies for application/json ContentType.
-type PostAdminMeNotificationPoliciesJSONRequestBody PostAdminMeNotificationPoliciesJSONBody
+type PostAdminMeNotificationPoliciesJSONRequestBody = PostAdminMeNotificationPoliciesJSONBody
 
 // PutAdminMeNotificationPoliciesOrderJSONRequestBody defines body for PutAdminMeNotificationPoliciesOrder for application/json ContentType.
-type PutAdminMeNotificationPoliciesOrderJSONRequestBody PutAdminMeNotificationPoliciesOrderJSONBody
+type PutAdminMeNotificationPoliciesOrderJSONRequestBody = PutAdminMeNotificationPoliciesOrderJSONBody
 
 // PatchAdminMeNotificationPoliciesIdJSONRequestBody defines body for PatchAdminMeNotificationPoliciesId for application/json ContentType.
-type PatchAdminMeNotificationPoliciesIdJSONRequestBody PatchAdminMeNotificationPoliciesIdJSONBody
+type PatchAdminMeNotificationPoliciesIdJSONRequestBody = PatchAdminMeNotificationPoliciesIdJSONBody
 
 // PostAdminMeNotificationPoliciesIdContactMethodsJSONRequestBody defines body for PostAdminMeNotificationPoliciesIdContactMethods for application/json ContentType.
-type PostAdminMeNotificationPoliciesIdContactMethodsJSONRequestBody PostAdminMeNotificationPoliciesIdContactMethodsJSONBody
+type PostAdminMeNotificationPoliciesIdContactMethodsJSONRequestBody = PostAdminMeNotificationPoliciesIdContactMethodsJSONBody
 
 // PutAdminMeNotificationPoliciesIdContactMethodsOrderJSONRequestBody defines body for PutAdminMeNotificationPoliciesIdContactMethodsOrder for application/json ContentType.
-type PutAdminMeNotificationPoliciesIdContactMethodsOrderJSONRequestBody PutAdminMeNotificationPoliciesIdContactMethodsOrderJSONBody
+type PutAdminMeNotificationPoliciesIdContactMethodsOrderJSONRequestBody = PutAdminMeNotificationPoliciesIdContactMethodsOrderJSONBody
 
 // PutAdminMePushPreferencesJSONRequestBody defines body for PutAdminMePushPreferences for application/json ContentType.
-type PutAdminMePushPreferencesJSONRequestBody PutAdminMePushPreferencesJSONBody
+type PutAdminMePushPreferencesJSONRequestBody = PutAdminMePushPreferencesJSONBody
 
 // PostAdminMeTokensJSONRequestBody defines body for PostAdminMeTokens for application/json ContentType.
-type PostAdminMeTokensJSONRequestBody PostAdminMeTokensJSONBody
+type PostAdminMeTokensJSONRequestBody = PostAdminMeTokensJSONBody
 
 // PutAdminMeTriggerPoliciesTriggerIdJSONRequestBody defines body for PutAdminMeTriggerPoliciesTriggerId for application/json ContentType.
-type PutAdminMeTriggerPoliciesTriggerIdJSONRequestBody PutAdminMeTriggerPoliciesTriggerIdJSONBody
+type PutAdminMeTriggerPoliciesTriggerIdJSONRequestBody = PutAdminMeTriggerPoliciesTriggerIdJSONBody
 
 // PutAdminScheduleRemindersIdJSONRequestBody defines body for PutAdminScheduleRemindersId for application/json ContentType.
-type PutAdminScheduleRemindersIdJSONRequestBody PutAdminScheduleRemindersIdJSONBody
+type PutAdminScheduleRemindersIdJSONRequestBody = PutAdminScheduleRemindersIdJSONBody
 
 // PostAdminSchedulesJSONRequestBody defines body for PostAdminSchedules for application/json ContentType.
-type PostAdminSchedulesJSONRequestBody PostAdminSchedulesJSONBody
+type PostAdminSchedulesJSONRequestBody = PostAdminSchedulesJSONBody
 
 // PutAdminSchedulesIdJSONRequestBody defines body for PutAdminSchedulesId for application/json ContentType.
-type PutAdminSchedulesIdJSONRequestBody PutAdminSchedulesIdJSONBody
+type PutAdminSchedulesIdJSONRequestBody = PutAdminSchedulesIdJSONBody
 
 // PostAdminSchedulesIdLayersJSONRequestBody defines body for PostAdminSchedulesIdLayers for application/json ContentType.
-type PostAdminSchedulesIdLayersJSONRequestBody PostAdminSchedulesIdLayersJSONBody
+type PostAdminSchedulesIdLayersJSONRequestBody = PostAdminSchedulesIdLayersJSONBody
 
 // PutAdminSchedulesIdNotificationPolicyJSONRequestBody defines body for PutAdminSchedulesIdNotificationPolicy for application/json ContentType.
-type PutAdminSchedulesIdNotificationPolicyJSONRequestBody PutAdminSchedulesIdNotificationPolicyJSONBody
+type PutAdminSchedulesIdNotificationPolicyJSONRequestBody = PutAdminSchedulesIdNotificationPolicyJSONBody
 
 // PostAdminSchedulesIdOverridesJSONRequestBody defines body for PostAdminSchedulesIdOverrides for application/json ContentType.
-type PostAdminSchedulesIdOverridesJSONRequestBody PostAdminSchedulesIdOverridesJSONBody
+type PostAdminSchedulesIdOverridesJSONRequestBody = PostAdminSchedulesIdOverridesJSONBody
 
 // PostAdminSchedulesIdShiftRemindersJSONRequestBody defines body for PostAdminSchedulesIdShiftReminders for application/json ContentType.
-type PostAdminSchedulesIdShiftRemindersJSONRequestBody PostAdminSchedulesIdShiftRemindersJSONBody
+type PostAdminSchedulesIdShiftRemindersJSONRequestBody = PostAdminSchedulesIdShiftRemindersJSONBody
 
 // PutAdminSchedulesIdTeamsJSONRequestBody defines body for PutAdminSchedulesIdTeams for application/json ContentType.
-type PutAdminSchedulesIdTeamsJSONRequestBody PutAdminSchedulesIdTeamsJSONBody
+type PutAdminSchedulesIdTeamsJSONRequestBody = PutAdminSchedulesIdTeamsJSONBody
 
 // PutAdminShiftRemindersIdJSONRequestBody defines body for PutAdminShiftRemindersId for application/json ContentType.
-type PutAdminShiftRemindersIdJSONRequestBody PutAdminShiftRemindersIdJSONBody
+type PutAdminShiftRemindersIdJSONRequestBody = PutAdminShiftRemindersIdJSONBody
 
 // PostAdminTeamsJSONRequestBody defines body for PostAdminTeams for application/json ContentType.
-type PostAdminTeamsJSONRequestBody PostAdminTeamsJSONBody
+type PostAdminTeamsJSONRequestBody = PostAdminTeamsJSONBody
 
 // PutAdminTeamsIdJSONRequestBody defines body for PutAdminTeamsId for application/json ContentType.
-type PutAdminTeamsIdJSONRequestBody PutAdminTeamsIdJSONBody
+type PutAdminTeamsIdJSONRequestBody = PutAdminTeamsIdJSONBody
 
 // PostAdminTeamsIdGroupMappingsJSONRequestBody defines body for PostAdminTeamsIdGroupMappings for application/json ContentType.
-type PostAdminTeamsIdGroupMappingsJSONRequestBody PostAdminTeamsIdGroupMappingsJSONBody
+type PostAdminTeamsIdGroupMappingsJSONRequestBody = PostAdminTeamsIdGroupMappingsJSONBody
 
 // PutAdminTeamsIdGroupMappingsGroupJSONRequestBody defines body for PutAdminTeamsIdGroupMappingsGroup for application/json ContentType.
-type PutAdminTeamsIdGroupMappingsGroupJSONRequestBody PutAdminTeamsIdGroupMappingsGroupJSONBody
+type PutAdminTeamsIdGroupMappingsGroupJSONRequestBody = PutAdminTeamsIdGroupMappingsGroupJSONBody
 
 // PostAdminTeamsIdIntegrationsJSONRequestBody defines body for PostAdminTeamsIdIntegrations for application/json ContentType.
-type PostAdminTeamsIdIntegrationsJSONRequestBody PostAdminTeamsIdIntegrationsJSONBody
+type PostAdminTeamsIdIntegrationsJSONRequestBody = PostAdminTeamsIdIntegrationsJSONBody
 
 // PostAdminTeamsIdRolesJSONRequestBody defines body for PostAdminTeamsIdRoles for application/json ContentType.
-type PostAdminTeamsIdRolesJSONRequestBody PostAdminTeamsIdRolesJSONBody
+type PostAdminTeamsIdRolesJSONRequestBody = PostAdminTeamsIdRolesJSONBody
 
 // PutAdminTeamsIdRolesRoleIdJSONRequestBody defines body for PutAdminTeamsIdRolesRoleId for application/json ContentType.
-type PutAdminTeamsIdRolesRoleIdJSONRequestBody PutAdminTeamsIdRolesRoleIdJSONBody
+type PutAdminTeamsIdRolesRoleIdJSONRequestBody = PutAdminTeamsIdRolesRoleIdJSONBody
 
 // PostAdminTeamsIdTriggersJSONRequestBody defines body for PostAdminTeamsIdTriggers for application/json ContentType.
-type PostAdminTeamsIdTriggersJSONRequestBody PostAdminTeamsIdTriggersJSONBody
+type PostAdminTeamsIdTriggersJSONRequestBody = PostAdminTeamsIdTriggersJSONBody
 
 // PostAdminTeamsIdUserRolesJSONRequestBody defines body for PostAdminTeamsIdUserRoles for application/json ContentType.
-type PostAdminTeamsIdUserRolesJSONRequestBody PostAdminTeamsIdUserRolesJSONBody
+type PostAdminTeamsIdUserRolesJSONRequestBody = PostAdminTeamsIdUserRolesJSONBody
 
 // PutAdminTriggersIdJSONRequestBody defines body for PutAdminTriggersId for application/json ContentType.
-type PutAdminTriggersIdJSONRequestBody PutAdminTriggersIdJSONBody
+type PutAdminTriggersIdJSONRequestBody = PutAdminTriggersIdJSONBody
 
 // PostAdminTriggersIdSilencesJSONRequestBody defines body for PostAdminTriggersIdSilences for application/json ContentType.
-type PostAdminTriggersIdSilencesJSONRequestBody PostAdminTriggersIdSilencesJSONBody
+type PostAdminTriggersIdSilencesJSONRequestBody = PostAdminTriggersIdSilencesJSONBody
 
 // PutAdminTriggersIdSilencesSilenceIdJSONRequestBody defines body for PutAdminTriggersIdSilencesSilenceId for application/json ContentType.
-type PutAdminTriggersIdSilencesSilenceIdJSONRequestBody PutAdminTriggersIdSilencesSilenceIdJSONBody
+type PutAdminTriggersIdSilencesSilenceIdJSONRequestBody = PutAdminTriggersIdSilencesSilenceIdJSONBody
 
 // PutAdminTriggersIdTargetsJSONRequestBody defines body for PutAdminTriggersIdTargets for application/json ContentType.
-type PutAdminTriggersIdTargetsJSONRequestBody PutAdminTriggersIdTargetsJSONBody
+type PutAdminTriggersIdTargetsJSONRequestBody = PutAdminTriggersIdTargetsJSONBody
 
 // PutAdminTriggersIdTeamsJSONRequestBody defines body for PutAdminTriggersIdTeams for application/json ContentType.
-type PutAdminTriggersIdTeamsJSONRequestBody PutAdminTriggersIdTeamsJSONBody
+type PutAdminTriggersIdTeamsJSONRequestBody = PutAdminTriggersIdTeamsJSONBody
 
 // PostAdminTriggersIdTestTemplateJSONRequestBody defines body for PostAdminTriggersIdTestTemplate for application/json ContentType.
-type PostAdminTriggersIdTestTemplateJSONRequestBody PostAdminTriggersIdTestTemplateJSONBody
+type PostAdminTriggersIdTestTemplateJSONRequestBody = PostAdminTriggersIdTestTemplateJSONBody
 
 // PostAdminUsersJSONRequestBody defines body for PostAdminUsers for application/json ContentType.
-type PostAdminUsersJSONRequestBody PostAdminUsersJSONBody
+type PostAdminUsersJSONRequestBody = PostAdminUsersJSONBody
 
 // PostAdminUsersIdContactMethodsJSONRequestBody defines body for PostAdminUsersIdContactMethods for application/json ContentType.
-type PostAdminUsersIdContactMethodsJSONRequestBody PostAdminUsersIdContactMethodsJSONBody
+type PostAdminUsersIdContactMethodsJSONRequestBody = PostAdminUsersIdContactMethodsJSONBody
 
 // PutAdminUsersIdContactMethodsOrderJSONRequestBody defines body for PutAdminUsersIdContactMethodsOrder for application/json ContentType.
-type PutAdminUsersIdContactMethodsOrderJSONRequestBody PutAdminUsersIdContactMethodsOrderJSONBody
+type PutAdminUsersIdContactMethodsOrderJSONRequestBody = PutAdminUsersIdContactMethodsOrderJSONBody
 
 // PostAdminUsersIdShiftRemindersJSONRequestBody defines body for PostAdminUsersIdShiftReminders for application/json ContentType.
-type PostAdminUsersIdShiftRemindersJSONRequestBody PostAdminUsersIdShiftRemindersJSONBody
+type PostAdminUsersIdShiftRemindersJSONRequestBody = PostAdminUsersIdShiftRemindersJSONBody
 
 // PostCalendarSchedulesIdPersonalWebcalExportJSONRequestBody defines body for PostCalendarSchedulesIdPersonalWebcalExport for application/json ContentType.
-type PostCalendarSchedulesIdPersonalWebcalExportJSONRequestBody PostCalendarSchedulesIdPersonalWebcalExportJSONBody
+type PostCalendarSchedulesIdPersonalWebcalExportJSONRequestBody = PostCalendarSchedulesIdPersonalWebcalExportJSONBody
 
 // PutCalendarSchedulesIdPersonalWebcalExportJSONRequestBody defines body for PutCalendarSchedulesIdPersonalWebcalExport for application/json ContentType.
-type PutCalendarSchedulesIdPersonalWebcalExportJSONRequestBody PutCalendarSchedulesIdPersonalWebcalExportJSONBody
+type PutCalendarSchedulesIdPersonalWebcalExportJSONRequestBody = PutCalendarSchedulesIdPersonalWebcalExportJSONBody
 
 // PostCalendarSchedulesIdWebcalExportJSONRequestBody defines body for PostCalendarSchedulesIdWebcalExport for application/json ContentType.
-type PostCalendarSchedulesIdWebcalExportJSONRequestBody PostCalendarSchedulesIdWebcalExportJSONBody
+type PostCalendarSchedulesIdWebcalExportJSONRequestBody = PostCalendarSchedulesIdWebcalExportJSONBody
 
 // PutCalendarSchedulesIdWebcalExportJSONRequestBody defines body for PutCalendarSchedulesIdWebcalExport for application/json ContentType.
-type PutCalendarSchedulesIdWebcalExportJSONRequestBody PutCalendarSchedulesIdWebcalExportJSONBody
+type PutCalendarSchedulesIdWebcalExportJSONRequestBody = PutCalendarSchedulesIdWebcalExportJSONBody
 
 // PostDevicesJSONRequestBody defines body for PostDevices for application/json ContentType.
-type PostDevicesJSONRequestBody PostDevicesJSONBody
+type PostDevicesJSONRequestBody = PostDevicesJSONBody
 
 // PatchDevicesIdJSONRequestBody defines body for PatchDevicesId for application/json ContentType.
-type PatchDevicesIdJSONRequestBody PatchDevicesIdJSONBody
+type PatchDevicesIdJSONRequestBody = PatchDevicesIdJSONBody
 
 // PutDevicesIdJSONRequestBody defines body for PutDevicesId for application/json ContentType.
-type PutDevicesIdJSONRequestBody PutDevicesIdJSONBody
+type PutDevicesIdJSONRequestBody = PutDevicesIdJSONBody
 
 // PostIncidentsIdAckJSONRequestBody defines body for PostIncidentsIdAck for application/json ContentType.
-type PostIncidentsIdAckJSONRequestBody PostIncidentsIdAckJSONBody
+type PostIncidentsIdAckJSONRequestBody = PostIncidentsIdAckJSONBody
 
 // PostIncidentsIdAdvanceJSONRequestBody defines body for PostIncidentsIdAdvance for application/json ContentType.
-type PostIncidentsIdAdvanceJSONRequestBody PostIncidentsIdAdvanceJSONBody
+type PostIncidentsIdAdvanceJSONRequestBody = PostIncidentsIdAdvanceJSONBody
 
 // PostIncidentsIdResolveJSONRequestBody defines body for PostIncidentsIdResolve for application/json ContentType.
-type PostIncidentsIdResolveJSONRequestBody PostIncidentsIdResolveJSONBody
+type PostIncidentsIdResolveJSONRequestBody = PostIncidentsIdResolveJSONBody
 
 // PostIncidentsIdSilenceJSONRequestBody defines body for PostIncidentsIdSilence for application/json ContentType.
-type PostIncidentsIdSilenceJSONRequestBody PostIncidentsIdSilenceJSONBody
+type PostIncidentsIdSilenceJSONRequestBody = PostIncidentsIdSilenceJSONBody
 
 // PostIngestIdJSONRequestBody defines body for PostIngestId for application/json ContentType.
 type PostIngestIdJSONRequestBody = PostIngestIdJSONBody
 
 // PostSmsWebhookJSONRequestBody defines body for PostSmsWebhook for application/json ContentType.
-type PostSmsWebhookJSONRequestBody PostSmsWebhookJSONBody
+type PostSmsWebhookJSONRequestBody = PostSmsWebhookJSONBody
 
 // PostTwilioCallJSONRequestBody defines body for PostTwilioCall for application/json ContentType.
-type PostTwilioCallJSONRequestBody PostTwilioCallJSONBody
+type PostTwilioCallJSONRequestBody = PostTwilioCallJSONBody
 
 // PostTwilioGatherIncidentIDContactMethodIDFormdataRequestBody defines body for PostTwilioGatherIncidentIDContactMethodID for application/x-www-form-urlencoded ContentType.
 type PostTwilioGatherIncidentIDContactMethodIDFormdataRequestBody = PostTwilioGatherIncidentIDContactMethodIDFormdataBody

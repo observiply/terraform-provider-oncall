@@ -115,7 +115,7 @@ func (r *integrationResource) Schema(ctx context.Context, _ resource.SchemaReque
 			},
 			"kind": schema.StringAttribute{
 				Required:    true,
-				Description: "Integration kind, e.g. \"webhook\".",
+				Description: "Integration kind, e.g. \"outgoing_webhook\".",
 			},
 			"enabled": schema.BoolAttribute{
 				Optional:    true,

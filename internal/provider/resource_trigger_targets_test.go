@@ -77,8 +77,9 @@ resource "oncall_trigger" "test" {
 
 resource "oncall_integration" "test" {
   name          = "tfacc-trigger-targets-integration"
-  kind          = "webhook"
+  kind          = "outgoing_webhook"
   owner_team_id = data.oncall_team.demo_platform.id
+  url           = "https://example.com/tfacc-trigger-targets"
 }
 `
 

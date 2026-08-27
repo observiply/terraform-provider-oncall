@@ -97,7 +97,7 @@ func TestAccIntegrationResource_CRUD(t *testing.T) {
 					testAccCheckIDCaptured(resourceAddr, &integrationID),
 					resource.TestCheckResourceAttr(resourceAddr, "name", "tfacc-integration"),
 					resource.TestCheckResourceAttr(resourceAddr, "description", "initial description"),
-					resource.TestCheckResourceAttr(resourceAddr, "kind", "webhook"),
+					resource.TestCheckResourceAttr(resourceAddr, "kind", "outgoing_webhook"),
 					resource.TestCheckResourceAttr(resourceAddr, "enabled", "true"),
 					resource.TestCheckResourceAttr(resourceAddr, "url", "https://example.com/hook"),
 					resource.TestCheckResourceAttr(resourceAddr, "http_method", "POST"),
@@ -140,7 +140,7 @@ data "oncall_team" "demo_platform" {
 resource "oncall_integration" "crud_test" {
   name          = %q
   description   = %q
-  kind          = "webhook"
+  kind          = "outgoing_webhook"
   owner_team_id = data.oncall_team.demo_platform.id
   url           = %q
   enabled       = %t
@@ -150,12 +150,15 @@ resource "oncall_integration" "crud_test" {
 
 func testAccIntegrationSecretConfig(secret string, version int) string {
 	return fmt.Sprintf(`
-data "oncall_teams" "all" {}
+data "oncall_team" "demo_platform" {
+  name = "Demo Platform"
+}
 
 resource "oncall_integration" "test" {
   name          = "tfprovider-08-acc-test"
-  kind          = "webhook"
-  owner_team_id = data.oncall_teams.all.teams[0].id
+  kind          = "outgoing_webhook"
+  owner_team_id = data.oncall_team.demo_platform.id
+  url           = "https://example.com/tfprovider-08-acc"
   auth_method   = "bearer"
 
   secret_wo         = %q

@@ -15,7 +15,7 @@ Manages an oncall integration, an outbound notification target (e.g. a webhook) 
 ```terraform
 resource "oncall_integration" "slack" {
   name          = "Slack #incidents"
-  kind          = "webhook"
+  kind          = "outgoing_webhook"
   owner_team_id = data.oncall_team.platform.id
 
   url         = "https://hooks.slack.com/services/T000/B000/XXXX"
@@ -46,7 +46,7 @@ variable "slack_signing_key" {
 
 ### Required
 
-- `kind` (String) Integration kind, e.g. "webhook".
+- `kind` (String) Integration kind, e.g. "outgoing_webhook".
 - `name` (String) Integration name.
 - `owner_team_id` (String) Team that owns this integration and alone controls sharing. The oncall API has no move-between-owners operation, so changing this recreates the integration.
 

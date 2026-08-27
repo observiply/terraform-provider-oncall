@@ -18,28 +18,27 @@ terraform {
 }
 
 provider "oncall" {
-  endpoint = "https://oncall.example.com" # or ONCALL_ENDPOINT
+  endpoint = var.oncall_endpoint  # or ONCALL_ENDPOINT
   token    = var.oncall_token             # or ONCALL_TOKEN
 }
-
+variable "oncall_endpoint" {
+  type      = string
+  sensitive = true
+}
 variable "oncall_token" {
   type      = string
   sensitive = true
 }
 
-variable "webhook_signing_key" {
-  type      = string
-  sensitive = true
-}
 
 # Teams are administrator-managed, not provider-managed (tfprovider-05 §5) —
 # look them up, don't create them.
 data "oncall_team" "platform" {
-  name = "Platform"
+  name = "Demo Platform"
 }
 
 data "oncall_team" "payments" {
-  name = "Payments"
+  name = "Demo Payments"
 }
 
 data "oncall_team_members" "platform" {
@@ -113,7 +112,7 @@ resource "oncall_schedule_notification_policy" "primary" {
 
 resource "oncall_integration" "webhook" {
   name          = "Ops webhook"
-  kind          = "webhook"
+  kind          = "outgoing_webhook"
   owner_team_id = data.oncall_team.platform.id
   team_ids      = [data.oncall_team.platform.id, data.oncall_team.payments.id]
 
@@ -125,11 +124,10 @@ resource "oncall_integration" "webhook" {
     text = "{{ .title }}"
   })
 
-  # Write-only: never stored in state, never read back from the API. Bump
-  # secret_wo_version to rotate; changing secret_wo alone does nothing.
-  auth_method       = "bearer"
-  secret_wo         = var.webhook_signing_key
-  secret_wo_version = 1
+  # No outbound auth for this demo. For a bearer token, set auth_method =
+  # "bearer" plus write-only secret_wo / secret_wo_version (needs a
+  # var.webhook_signing_key). Write-only: never stored in state.
+  auth_method = "none"
 }
 
 # --- Trigger, routed to the schedule and the integration -------------------
@@ -139,12 +137,12 @@ resource "oncall_trigger" "api_alerts" {
   description   = "Ingest endpoint for the API service's alertmanager"
   owner_team_id = data.oncall_team.platform.id
   team_ids      = [data.oncall_team.platform.id, data.oncall_team.payments.id]
-  auth_method   = "bearer" # immutable after creation
+  auth_method   = "none"
 
   payload_template = <<-EOT
     {
-      "title": {{ .labels.alertname | toJSON }},
-      "status": {{ .status | toJSON }}
+      "title": "{{ .labels.alertname }}",
+      "status": "{{ .status }}"
     }
   EOT
 }

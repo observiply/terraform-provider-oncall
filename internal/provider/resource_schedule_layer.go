@@ -192,10 +192,15 @@ func (r *scheduleLayerResource) Create(ctx context.Context, req resource.CreateR
 	defer cancel()
 
 	scheduleID := plan.ScheduleID.ValueString()
+	rotationLength, err := intervalFromString(plan.RotationLength)
+	if err != nil {
+		resp.Diagnostics.AddAttributeError(path.Root("rotation_length"), "Invalid rotation_length", err.Error())
+		return
+	}
 	createBody, err := newBody((*client.PostAdminSchedulesIdLayersJSONBody).FromAdminLayerBody, client.AdminLayerBody{
 		Name:           plan.Name.ValueStringPointer(),
 		Tier:           intPtrFromInt64(plan.Tier),
-		RotationLength: plan.RotationLength.ValueStringPointer(),
+		RotationLength: rotationLength,
 		HandoffAt:      plan.HandoffAt.ValueStringPointer(),
 		StartAt:        plan.StartAt.ValueStringPointer(),
 		EndAt:          plan.EndAt.ValueStringPointer(),
@@ -215,7 +220,7 @@ func (r *scheduleLayerResource) Create(ctx context.Context, req resource.CreateR
 	}
 	layerID := *createResp.JSON201.Id
 
-	state := layerRespToModel(createResp.JSON201, plan.Timeouts)
+	state := layerRespToModel(createResp.JSON201, plan.Timeouts, plan.RotationLength)
 	state.Member = nil
 	state.Restriction = nil
 
@@ -280,7 +285,7 @@ func (r *scheduleLayerResource) Read(ctx context.Context, req resource.ReadReque
 		resp.Diagnostics.Append(unexpectedStatus("Unable to read schedule layer", "GET", "/admin/layers/"+id, getResp.StatusCode(), getResp.Body))
 		return
 	}
-	newState := layerRespToModel(getResp.JSON200, state.Timeouts)
+	newState := layerRespToModel(getResp.JSON200, state.Timeouts, state.RotationLength)
 
 	members, d := r.readMembers(ctx, *getResp.JSON200.ScheduleId, id)
 	resp.Diagnostics.Append(d...)
@@ -320,9 +325,14 @@ func (r *scheduleLayerResource) Update(ctx context.Context, req resource.UpdateR
 	defer cancel()
 
 	id := state.ID.ValueString()
+	rotationLength, err := intervalFromString(plan.RotationLength)
+	if err != nil {
+		resp.Diagnostics.AddAttributeError(path.Root("rotation_length"), "Invalid rotation_length", err.Error())
+		return
+	}
 	updateBody, err := newBody((*client.PutAdminLayersIdJSONBody).FromAdminUpdateLayerBody, client.AdminUpdateLayerBody{
 		Name:           plan.Name.ValueStringPointer(),
-		RotationLength: plan.RotationLength.ValueStringPointer(),
+		RotationLength: rotationLength,
 		HandoffAt:      plan.HandoffAt.ValueStringPointer(),
 		StartAt:        plan.StartAt.ValueStringPointer(),
 		EndAt:          plan.EndAt.ValueStringPointer(),
@@ -340,7 +350,7 @@ func (r *scheduleLayerResource) Update(ctx context.Context, req resource.UpdateR
 		resp.Diagnostics.Append(unexpectedStatus("Unable to update schedule layer", "PUT", "/admin/layers/"+id, updateResp.StatusCode(), updateResp.Body))
 		return
 	}
-	newState := layerRespToModel(updateResp.JSON200, plan.Timeouts)
+	newState := layerRespToModel(updateResp.JSON200, plan.Timeouts, plan.RotationLength)
 	newState.Member = state.Member
 	newState.Restriction = state.Restriction
 	resp.Diagnostics.Append(resp.State.Set(ctx, &newState)...)
@@ -471,18 +481,50 @@ func (r *scheduleLayerResource) putRestrictions(ctx context.Context, layerID str
 	return restrictionRespToModel(*restrictionsResp.JSON200), nil
 }
 
-func layerRespToModel(l *client.AdminLayerResp, tf timeouts.Value) scheduleLayerResourceModel {
+// layerRespToModel maps an API layer response into the resource model. prior
+// is the rotation_length already in plan/state: the API returns rotation_length
+// as an interval object that can serialize back to a different-but-equivalent
+// ISO 8601 string ("P7D" vs "P1W"), so when prior parses to the same interval
+// it is kept verbatim to avoid a spurious diff.
+func layerRespToModel(l *client.AdminLayerResp, tf timeouts.Value, prior types.String) scheduleLayerResourceModel {
 	return scheduleLayerResourceModel{
 		ID:             strFromPtr(l.Id),
 		ScheduleID:     strFromPtr(l.ScheduleId),
 		Name:           strFromPtr(l.Name),
 		Tier:           int64FromIntPtr(l.Tier),
-		RotationLength: strFromPtr(l.RotationLength),
+		RotationLength: intervalToString(l.RotationLength, prior),
 		HandoffAt:      strFromPtr(l.HandoffAt),
 		StartAt:        strFromPtr(l.StartAt),
 		EndAt:          strFromPtr(l.EndAt),
 		Timeouts:       tf,
 	}
+}
+
+// intervalFromString parses an ISO 8601 rotation_length for a request body. A
+// null/unknown value yields a nil pointer (field omitted).
+func intervalFromString(v types.String) (*client.Interval, error) {
+	if v.IsNull() || v.IsUnknown() {
+		return nil, nil
+	}
+	iv, err := client.ParseISO8601(v.ValueString())
+	if err != nil {
+		return nil, err
+	}
+	return &iv, nil
+}
+
+// intervalToString renders an API interval back to an ISO 8601 string, keeping
+// prior verbatim when it is equivalent (see layerRespToModel).
+func intervalToString(iv *client.Interval, prior types.String) types.String {
+	if iv == nil {
+		return types.StringNull()
+	}
+	if !prior.IsNull() && !prior.IsUnknown() {
+		if p, err := client.ParseISO8601(prior.ValueString()); err == nil && p == *iv {
+			return prior
+		}
+	}
+	return types.StringValue(iv.ISO8601())
 }
 
 func memberRespToModel(members *[]client.AdminMemberResp) []layerMemberModel {
