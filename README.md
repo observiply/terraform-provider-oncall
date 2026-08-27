@@ -42,13 +42,12 @@ provider "oncall" {
 ```
 
 - `endpoint`: oncall base URL. The provider appends `/m2m/api/v1`.
-- `token`: an oncall-issued API token (`oncall_pat_...`, from Settings → API tokens). Expires (90d default, 365 max). authentik / trigger-ingest tokens are rejected at configure time.
+- `token`: an oncall-issued API token. Expires (90d default, 365 max).
 
 ## Secrets
 
 - `oncall_integration` outbound auth uses write-only attributes (`secret_wo` / `secret_wo_version`). Requires Terraform/OpenTofu >= 1.11.
-- `oncall_trigger.token` lands in state once from the create response and is never rotated by the provider. Rotate out-of-band.
-- State holds on-call topology (no PII) — use an encrypted remote backend beyond local tests.
+- `oncall_trigger.token`
 
 ## Local development
 
@@ -97,7 +96,6 @@ go generate ./...
 git add internal/client/swagger.json internal/client/client.gen.go
 ```
 
-CI's `spec-drift` diffs it against oncall `main`.
 
 ## Releasing
 ```bash
