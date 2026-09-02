@@ -60,9 +60,9 @@ func (r *triggerTargetsResource) Schema(ctx context.Context, _ resource.SchemaRe
 			"This is a singleton per trigger: the target list is atomically replaced on every " +
 			"apply. Destroying this resource clears all targets (PUT with an empty list).\n\n" +
 			"The API tracks position independently within each on_event group and always " +
-			"lists targets grouped as fired, then state_change, then webhook (see " +
-			"tfprovider-07's implementation notes) — list target blocks in that same grouped " +
-			"order to avoid a reorder diff on every plan after the first apply.",
+			"lists targets grouped as fired, then state_change, then webhook — list target " +
+			"blocks in that same grouped order to avoid a reorder diff on every plan after " +
+			"the first apply.",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				Computed:      true,

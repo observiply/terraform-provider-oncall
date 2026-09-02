@@ -3,9 +3,8 @@
 # Platform and shared read/write into Payments. This is what people copy, so
 # it demonstrates the sharing model deliberately: owner_team_id stays with
 # the creating team forever (only Platform can change who this is shared
-# with — see the RBAC "Sharing model" section in oncall's AGENTS.md), while
-# Payments gets full view/write access without ever being able to re-share
-# or un-share any of it.
+# with), while Payments gets full view/write access without ever being able
+# to re-share or un-share any of it.
 
 terraform {
   required_version = ">= 1.11" # write-only attributes, see oncall_integration below
@@ -18,12 +17,11 @@ terraform {
 }
 
 provider "oncall" {
-  endpoint = var.oncall_endpoint  # or ONCALL_ENDPOINT
-  token    = var.oncall_token             # or ONCALL_TOKEN
+  endpoint = var.oncall_endpoint # or ONCALL_ENDPOINT
+  token    = var.oncall_token    # or ONCALL_TOKEN
 }
 variable "oncall_endpoint" {
-  type      = string
-  sensitive = true
+  type = string
 }
 variable "oncall_token" {
   type      = string
@@ -31,8 +29,8 @@ variable "oncall_token" {
 }
 
 
-# Teams are administrator-managed, not provider-managed (tfprovider-05 §5) —
-# look them up, don't create them.
+# Teams are administrator-managed, not provider-managed — look them up,
+# don't create them.
 data "oncall_team" "platform" {
   name = "Demo Platform"
 }

@@ -3,12 +3,12 @@
 page_title: "oncall_team_members Data Source - terraform-provider-oncall"
 subcategory: ""
 description: |-
-  Looks up the user ids and display names of a team's members, for referencing them in oncall_schedule_layer member blocks. Deliberately excludes email: GET /admin/teams/{id}/group-members redacts it for non-admins (tfprovider-07's PII exclusion — see AGENTS.md's Protecting PII section), so it is dropped here rather than letting a redacted value ever enter state.
+  Looks up the user ids and display names of a team's members, for referencing them in oncall_schedule_layer member blocks. Deliberately excludes email: GET /admin/teams/{id}/group-members redacts it for non-admins, so it is dropped here rather than letting a redacted value ever enter state.
 ---
 
 # oncall_team_members (Data Source)
 
-Looks up the user ids and display names of a team's members, for referencing them in oncall_schedule_layer member blocks. Deliberately excludes email: GET /admin/teams/{id}/group-members redacts it for non-admins (tfprovider-07's PII exclusion — see AGENTS.md's Protecting PII section), so it is dropped here rather than letting a redacted value ever enter state.
+Looks up the user ids and display names of a team's members, for referencing them in oncall_schedule_layer member blocks. Deliberately excludes email: GET /admin/teams/{id}/group-members redacts it for non-admins, so it is dropped here rather than letting a redacted value ever enter state.
 
 ## Example Usage
 

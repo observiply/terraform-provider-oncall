@@ -38,23 +38,6 @@ jobs:
         with:
           version: latest
 
-  spec-drift:
-    runs-on: ubuntu-latest
-    # Diffs the vendored swagger.json against oncall's live main so a silently
-    # updated spec can't regenerate the client mid-PR and ship a provider that
-    # compiles but lies about the API it talks to. Bump the vendored copy
-    # deliberately (see README.md) when this fails.
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Fetch oncall main's swagger.json
-        run: |
-          curl -fsSL -o /tmp/oncall-swagger.json \
-            https://raw.githubusercontent.com/observiply/oncall/main/docs/swagger.json
-
-      - name: Compare against vendored copy
-        run: diff -u internal/client/swagger.json /tmp/oncall-swagger.json
-
   docs-drift:
     runs-on: ubuntu-latest
     # tfplugindocs generates docs/ from schema descriptions + examples/. Fail

@@ -82,9 +82,9 @@ func (r *scheduleResource) Schema(ctx context.Context, _ resource.SchemaRequest,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
-				Description: "Team that owns this schedule and alone controls sharing " +
-					"(AGENTS.md's sharing model). The oncall API has no move-between-owners " +
-					"operation, so changing this recreates the schedule.",
+				Description: "Team that owns this schedule and alone controls sharing. " +
+					"The oncall API has no move-between-owners operation, so changing this " +
+					"recreates the schedule.",
 			},
 			"team_ids": schema.SetAttribute{
 				ElementType: types.StringType,

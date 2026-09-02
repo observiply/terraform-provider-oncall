@@ -165,7 +165,7 @@ func (r *integrationResource) Schema(ctx context.Context, _ resource.SchemaReque
 				Computed:    true,
 				Default:     stringdefault.StaticString("none"),
 				Validators:  []validator.String{stringvalidator.OneOf("none", "bearer", "basic")},
-				Description: "Outbound auth method. The credential itself (tfprovider-08) is set separately.",
+				Description: "Outbound auth method. The credential itself is set separately.",
 			},
 			"has_secret": schema.BoolAttribute{
 				Computed:    true,

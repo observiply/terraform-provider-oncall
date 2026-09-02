@@ -51,7 +51,7 @@ func (d *rolesDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 	resp.Schema = schema.Schema{
 		Description: "Lists oncall's built-in roles (viewer, editor, owner, global_viewer). " +
 			"Per-team custom roles are out of scope for this data source (RBAC/custom-role " +
-			"management is admin-only, per AGENTS.md's RBAC section).",
+			"management is admin-only).",
 		Attributes: map[string]schema.Attribute{
 			"roles": schema.ListNestedAttribute{
 				Computed: true,

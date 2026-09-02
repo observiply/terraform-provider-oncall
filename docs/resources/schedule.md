@@ -40,7 +40,7 @@ resource "oncall_schedule" "primary" {
 ### Required
 
 - `name` (String) Schedule name.
-- `owner_team_id` (String) Team that owns this schedule and alone controls sharing (AGENTS.md's sharing model). The oncall API has no move-between-owners operation, so changing this recreates the schedule.
+- `owner_team_id` (String) Team that owns this schedule and alone controls sharing. The oncall API has no move-between-owners operation, so changing this recreates the schedule.
 
 ### Optional
 

@@ -4,14 +4,14 @@ page_title: "oncall_trigger_targets Resource - terraform-provider-oncall"
 subcategory: ""
 description: |-
   Manages the full set of notification targets for an oncall_trigger. This is a singleton per trigger: the target list is atomically replaced on every apply. Destroying this resource clears all targets (PUT with an empty list).
-  The API tracks position independently within each on_event group and always lists targets grouped as fired, then state_change, then webhook (see tfprovider-07's implementation notes) — list target blocks in that same grouped order to avoid a reorder diff on every plan after the first apply.
+  The API tracks position independently within each on_event group and always lists targets grouped as fired, then state_change, then webhook — list target blocks in that same grouped order to avoid a reorder diff on every plan after the first apply.
 ---
 
 # oncall_trigger_targets (Resource)
 
 Manages the full set of notification targets for an oncall_trigger. This is a singleton per trigger: the target list is atomically replaced on every apply. Destroying this resource clears all targets (PUT with an empty list).
 
-The API tracks position independently within each on_event group and always lists targets grouped as fired, then state_change, then webhook (see tfprovider-07's implementation notes) — list target blocks in that same grouped order to avoid a reorder diff on every plan after the first apply.
+The API tracks position independently within each on_event group and always lists targets grouped as fired, then state_change, then webhook — list target blocks in that same grouped order to avoid a reorder diff on every plan after the first apply.
 
 ## Example Usage
 

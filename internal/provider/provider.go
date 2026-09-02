@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -137,7 +138,7 @@ func (p *OncallProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
-	httpClient := &http.Client{}
+	httpClient := &http.Client{Timeout: 30 * time.Second}
 	c, err := client.NewClientWithResponses(
 		baseURL,
 		client.WithHTTPClient(httpClient),

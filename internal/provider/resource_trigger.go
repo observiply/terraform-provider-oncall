@@ -156,8 +156,7 @@ func (r *triggerResource) Schema(ctx context.Context, _ resource.SchemaRequest, 
 					"creation and never re-readable from the API. Empty for auth_method=none. " +
 					"This resource does not rotate it — POST .../rotate-token also returns its " +
 					"value exactly once, so unlike the integration secret there is no way to " +
-					"manage rotation without landing a value in state; rotate out-of-band " +
-					"instead (see tfprovider-08-secrets-and-rotation.md).",
+					"manage rotation without landing a value in state; rotate out-of-band instead.",
 			},
 		},
 		Blocks: map[string]schema.Block{

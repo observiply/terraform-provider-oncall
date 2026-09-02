@@ -62,7 +62,7 @@ output "api_alerts_token" {
 
 - `id` (String) Trigger UUID.
 - `ingest_url` (String) URL to POST events to.
-- `token` (String, Sensitive) One-time bearer token for auth_method=bearer, returned only at creation and never re-readable from the API. Empty for auth_method=none. This resource does not rotate it — POST .../rotate-token also returns its value exactly once, so unlike the integration secret there is no way to manage rotation without landing a value in state; rotate out-of-band instead (see tfprovider-08-secrets-and-rotation.md).
+- `token` (String, Sensitive) One-time bearer token for auth_method=bearer, returned only at creation and never re-readable from the API. Empty for auth_method=none. This resource does not rotate it — POST .../rotate-token also returns its value exactly once, so unlike the integration secret there is no way to manage rotation without landing a value in state; rotate out-of-band instead.
 
 <a id="nestedblock--timeouts"></a>
 ### Nested Schema for `timeouts`

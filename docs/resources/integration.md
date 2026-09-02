@@ -54,7 +54,7 @@ variable "slack_signing_key" {
 
 > **NOTE**: [Write-only arguments](https://developer.hashicorp.com/terraform/language/resources/ephemeral#write-only-arguments) are supported in Terraform 1.11 and later.
 
-- `auth_method` (String) Outbound auth method. The credential itself (tfprovider-08) is set separately.
+- `auth_method` (String) Outbound auth method. The credential itself is set separately.
 - `description` (String) Integration description.
 - `enabled` (Boolean) Whether the integration is currently active.
 - `headers` (String) JSON object of extra HTTP headers to send.

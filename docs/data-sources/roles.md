@@ -3,12 +3,12 @@
 page_title: "oncall_roles Data Source - terraform-provider-oncall"
 subcategory: ""
 description: |-
-  Lists oncall's built-in roles (viewer, editor, owner, global_viewer). Per-team custom roles are out of scope for this data source (RBAC/custom-role management is admin-only, per AGENTS.md's RBAC section).
+  Lists oncall's built-in roles (viewer, editor, owner, global_viewer). Per-team custom roles are out of scope for this data source (RBAC/custom-role management is admin-only).
 ---
 
 # oncall_roles (Data Source)
 
-Lists oncall's built-in roles (viewer, editor, owner, global_viewer). Per-team custom roles are out of scope for this data source (RBAC/custom-role management is admin-only, per AGENTS.md's RBAC section).
+Lists oncall's built-in roles (viewer, editor, owner, global_viewer). Per-team custom roles are out of scope for this data source (RBAC/custom-role management is admin-only).
 
 ## Example Usage
 

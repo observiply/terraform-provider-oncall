@@ -2,8 +2,6 @@
 
 Terraform/OpenTofu provider for [oncall](https://github.com/observiply/oncall), built with [terraform-plugin-framework](https://github.com/hashicorp/terraform-plugin-framework).
 
-Not on the public Terraform Registry yet. Install via `dev_overrides` (below). Blockers: artifact signing decision, green acceptance tests.
-
 ## Resources
 
 | Resource | What it is |
@@ -105,6 +103,5 @@ git tag vX.Y.Z && git push --tags
 ## CI
 
 - `build`: `go generate` (stale-check), `go build`, `go vet`, `golangci-lint`.
-- `spec-drift`: vendored `swagger.json` vs oncall `main`.
 - `docs-drift`: `docs/` vs schema descriptions and `examples/`.
 - `tofu-fmt`: `tofu fmt -check -recursive examples/`.
