@@ -3,6 +3,7 @@ package provider
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -28,6 +29,11 @@ const machineAPIPath = "/m2m/api/v1"
 // tokenPrefix is internal/apitoken.token.go's prefix constant, duplicated here
 // because the provider has no dependency on oncall's Go modules. Keep in sync.
 const tokenPrefix = "oncall_pat_"
+
+// apiVersion is the oncall API contract this provider was built against
+// (internal/server.apiVersion, mirrored here for the same no-shared-module
+// reason as tokenPrefix). Compared against GET /version's api_version.
+const apiVersion = "v1"
 
 const (
 	envEndpoint = "ONCALL_ENDPOINT"
@@ -153,8 +159,136 @@ func (p *OncallProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		return
 	}
 
+	// Version probe: GET /version is unauthenticated (like /healthz), so it
+	// also doubles as the first reachability check — a network/DNS failure
+	// here is a clearer signal than the same failure surfacing from the auth
+	// probe below with "GET /admin/teams" in the message.
+	checkOncallVersion(ctx, httpClient, baseURL, resp)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	// Auth probe: surface credential problems once, up front, rather than as N
 	// confusing per-resource errors on the first apply.
+	checkOncallAuth(ctx, c, baseURL, resp)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	data := &OncallProviderData{Client: c}
+	resp.ResourceData = data
+	resp.DataSourceData = data
+}
+
+func (p *OncallProvider) Resources(_ context.Context) []func() resource.Resource {
+	return []func() resource.Resource{
+		newScheduleResource,
+		newScheduleLayerResource,
+		newScheduleNotificationPolicyResource,
+		newTriggerResource,
+		newTriggerTargetsResource,
+		newIntegrationResource,
+	}
+}
+
+func (p *OncallProvider) DataSources(_ context.Context) []func() datasource.DataSource {
+	return []func() datasource.DataSource{
+		newTeamDataSource,
+		newTeamsDataSource,
+		newRolesDataSource,
+		newResourcesDataSource,
+		newTeamMembersDataSource,
+	}
+}
+
+// valueOrEnv returns the configured attribute value if set, else falls back to
+// the named environment variable.
+func valueOrEnv(v types.String, envVar string) string {
+	if !v.IsNull() && !v.IsUnknown() && v.ValueString() != "" {
+		return v.ValueString()
+	}
+	return os.Getenv(envVar)
+}
+
+// oncallVersion is GET /version's response body (internal/server.versionInfo
+// in oncall, duplicated here for the same no-shared-module reason as
+// tokenPrefix).
+type oncallVersion struct {
+	Version    string `json:"version"`
+	APIVersion string `json:"api_version"`
+}
+
+// checkOncallVersion calls the unauthenticated GET /version endpoint (mounted
+// next to /healthz, outside machineAPIPath's /api/v1) and fails Configure with
+// a clear diagnostic if oncall's api_version doesn't match apiVersion. oncall
+// installs old enough to predate /version itself get a 404, translated below
+// into a specific "upgrade oncall" message rather than a bare parse error.
+func checkOncallVersion(ctx context.Context, httpClient *http.Client, baseURL string, resp *provider.ConfigureResponse) {
+	versionURL := strings.TrimSuffix(baseURL, machineAPIPath) + "/m2m/version"
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionURL, http.NoBody)
+	if err != nil {
+		resp.Diagnostics.AddError("Unable to construct oncall version request", err.Error())
+		return
+	}
+	httpResp, err := httpClient.Do(req)
+	if err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to reach oncall",
+			fmt.Sprintf("GET %s failed: %s", versionURL, err),
+		)
+		return
+	}
+	defer func() { _ = httpResp.Body.Close() }()
+
+	if httpResp.StatusCode == http.StatusNotFound {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("endpoint"),
+			"oncall install predates the /version endpoint",
+			fmt.Sprintf(
+				"GET %s returned 404. This provider targets oncall API %s and checks "+
+					"compatibility via /version; an oncall install old enough to lack that "+
+					"endpoint is too old for this provider — upgrade oncall.",
+				versionURL, apiVersion,
+			),
+		)
+		return
+	}
+	if httpResp.StatusCode != http.StatusOK {
+		resp.Diagnostics.AddError(
+			"Unexpected response from oncall",
+			fmt.Sprintf("GET %s returned HTTP %d", versionURL, httpResp.StatusCode),
+		)
+		return
+	}
+
+	var v oncallVersion
+	if err := json.NewDecoder(httpResp.Body).Decode(&v); err != nil {
+		resp.Diagnostics.AddError(
+			"Unable to parse oncall version response",
+			fmt.Sprintf("GET %s: %s", versionURL, err),
+		)
+		return
+	}
+
+	if v.APIVersion != apiVersion {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("endpoint"),
+			"oncall API version mismatch",
+			fmt.Sprintf(
+				"This provider targets oncall API %q; the connected oncall (version %s) "+
+					"reports api_version %q. Use a provider release built for that API version.",
+				apiVersion, v.Version, v.APIVersion,
+			),
+		)
+	}
+}
+
+// checkOncallAuth calls GET /admin/teams — cheap, always allowed for any
+// authenticated token — purely to validate the token up front and fail
+// Configure with one clear diagnostic instead of N confusing per-resource
+// errors on the first apply.
+func checkOncallAuth(ctx context.Context, c *client.ClientWithResponses, baseURL string, resp *provider.ConfigureResponse) {
 	probe, err := c.GetAdminTeamsWithResponse(ctx, nil)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -194,43 +328,6 @@ func (p *OncallProvider) Configure(ctx context.Context, req provider.ConfigureRe
 			fmt.Sprintf("GET /admin/teams against %s returned HTTP %d", baseURL, probe.StatusCode()),
 		)
 	}
-	if resp.Diagnostics.HasError() {
-		return
-	}
-
-	data := &OncallProviderData{Client: c}
-	resp.ResourceData = data
-	resp.DataSourceData = data
-}
-
-func (p *OncallProvider) Resources(_ context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		newScheduleResource,
-		newScheduleLayerResource,
-		newScheduleNotificationPolicyResource,
-		newTriggerResource,
-		newTriggerTargetsResource,
-		newIntegrationResource,
-	}
-}
-
-func (p *OncallProvider) DataSources(_ context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		newTeamDataSource,
-		newTeamsDataSource,
-		newRolesDataSource,
-		newResourcesDataSource,
-		newTeamMembersDataSource,
-	}
-}
-
-// valueOrEnv returns the configured attribute value if set, else falls back to
-// the named environment variable.
-func valueOrEnv(v types.String, envVar string) string {
-	if !v.IsNull() && !v.IsUnknown() && v.ValueString() != "" {
-		return v.ValueString()
-	}
-	return os.Getenv(envVar)
 }
 
 // normalizeEndpoint accepts a bare oncall base URL, with or without a trailing

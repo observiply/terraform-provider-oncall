@@ -97,9 +97,17 @@ integration, all shared across two teams.
 
 ## Version compatibility
 
-This provider targets oncall API `v1`. A provider minor release may require
-a minimum oncall version, documented in that release's notes. Since oncall
-is self-hosted, the provider is expected to tolerate an older oncall
-install than it was built against — a resource requiring a newer oncall
-returns a clear "this resource requires oncall >= X" error rather than a
-bare 404.
+This provider targets oncall API `v1` and checks that on every `Configure`
+via oncall's unauthenticated `GET /version` endpoint, before any resource or
+data source runs:
+
+- an oncall install old enough to predate `/version` itself (a 404) fails
+  with a clear "upgrade oncall" error rather than a bare 404 on the first
+  resource;
+- an oncall reporting a different `api_version` fails with a clear
+  "use a provider release built for that API version" error.
+
+As of this release oncall's API has had no changes since `v1`, so any
+currently self-hosted install passes this check — the gate exists for the
+day a future provider or oncall release moves the contract, not because
+there's an incompatibility to guard against today.
