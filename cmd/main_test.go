@@ -37,11 +37,11 @@ func TestProviderAddressMatchesTypeName(t *testing.T) {
 }
 
 // TestProviderVersionDefault documents that an un-stamped build (no -ldflags
-// -X main.version=...) reports "dev", which the User-Agent header and oncall's
+// -X main.version=...) reports "0.0.0-dev", which the User-Agent header and oncall's
 // access logs rely on to distinguish local builds from releases.
 func TestProviderVersionDefault(t *testing.T) {
-	if version != "dev" {
-		t.Fatalf("default version = %q, want %q", version, "dev")
+	if version != "0.0.0-dev" {
+		t.Fatalf("default version = %q, want %q", version, "0.0.0-dev")
 	}
 
 	metaResp := &fwprovider.MetadataResponse{}

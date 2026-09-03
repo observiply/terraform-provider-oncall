@@ -26,7 +26,7 @@ const providerAddress = "registry.terraform.io/observiply/oncall"
 //	go build -ldflags "-X main.version=$(VERSION)"
 //
 // See .goreleaser.yml.
-var version = "dev"
+var version = "0.0.0-dev"
 
 func main() {
 	var debug bool
