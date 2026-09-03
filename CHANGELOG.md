@@ -5,10 +5,12 @@ All notable changes to this provider are documented here. The format is based on
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (with the
 0.x caveat that minor versions may carry breaking changes until 1.0.0).
 
-## [0.1.0] - 2026-09-03
+## [0.0.2] - 2026-09-03
 
-Promotion of `0.0.1` to a minor version as the first supported release. No
-provider changes; see `0.0.1` for the full surface.
+### Fixed
+
+- Release: include `terraform-registry-manifest.json` in `SHA256SUMS` so the
+  Terraform Registry accepts the release. No provider changes.
 
 ## [0.0.1] - 2026-09-03
 
@@ -39,4 +41,5 @@ write-only integration secret attributes.
   perpetual diff (`P1W` vs `P7D`).
 
 [0.1.0]: https://github.com/observiply/terraform-provider-oncall/releases/tag/v0.1.0
+[0.0.2]: https://github.com/observiply/terraform-provider-oncall/releases/tag/v0.0.2
 [0.0.1]: https://github.com/observiply/terraform-provider-oncall/releases/tag/v0.0.1
