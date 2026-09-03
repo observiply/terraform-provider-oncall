@@ -227,14 +227,18 @@ type oncallVersion struct {
 // get a 404, translated below into a specific "upgrade oncall" message rather
 // than a bare parse error.
 func checkOncallVersion(ctx context.Context, httpClient *http.Client, baseURL string, resp *provider.ConfigureResponse) {
+	// gosec G704: versionURL derives from the operator-set `endpoint` provider
+	// attribute (normalized above), not from any request or remote input — the
+	// operator chooses which oncall this talks to, exactly as they do for every
+	// other call the provider makes. Not an SSRF vector.
 	versionURL := strings.TrimSuffix(baseURL, machineAPIPath) + "/version"
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionURL, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionURL, http.NoBody) //nolint:gosec // G704: URL is operator config, see above
 	if err != nil {
 		resp.Diagnostics.AddError("Unable to construct oncall version request", err.Error())
 		return
 	}
-	httpResp, err := httpClient.Do(req)
+	httpResp, err := httpClient.Do(req) //nolint:gosec // G704: URL is operator config, see above
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to reach oncall",

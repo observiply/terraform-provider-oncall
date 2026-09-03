@@ -34,9 +34,12 @@ jobs:
         run: go vet ./...
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        # action v7+ is required for a `version: "2"` .golangci.yml; pin the
+        # linter to an exact release rather than tracking `latest`, so a new
+        # gosec/staticcheck rule can't turn a green branch red without a commit.
+        uses: golangci/golangci-lint-action@v9
         with:
-          version: latest
+          version: v2.13.2
 
   docs-drift:
     runs-on: ubuntu-latest

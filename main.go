@@ -15,6 +15,12 @@ import (
 
 //go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.25.0 generate
 
+// providerAddress is the fully-qualified address users put in
+// required_providers. It must match the Terraform Registry namespace this
+// provider publishes under (observiply/oncall) and the "oncall" TypeName the
+// provider reports from Metadata.
+const providerAddress = "registry.terraform.io/observiply/oncall"
+
 // version is overwritten at build time via:
 //
 //	go build -ldflags "-X main.version=$(VERSION)"
@@ -28,7 +34,7 @@ func main() {
 	flag.Parse()
 
 	err := providerserver.Serve(context.Background(), provider.New(version), providerserver.ServeOpts{
-		Address: "registry.terraform.io/observiply/oncall",
+		Address: providerAddress,
 		Debug:   debug,
 	})
 	if err != nil {
