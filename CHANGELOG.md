@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (with the
 
 ## [0.1.0] - 2026-09-03
 
+Promotion of `0.0.1` to a minor version as the first supported release. No
+provider changes; see `0.0.1` for the full surface.
+
+## [0.0.1] - 2026-09-03
+
 Initial release. Protocol version 6.0; requires Terraform >= 1.11 for the
 write-only integration secret attributes.
 
@@ -34,3 +39,4 @@ write-only integration secret attributes.
   perpetual diff (`P1W` vs `P7D`).
 
 [0.1.0]: https://github.com/observiply/terraform-provider-oncall/releases/tag/v0.1.0
+[0.0.1]: https://github.com/observiply/terraform-provider-oncall/releases/tag/v0.0.1
