@@ -32,7 +32,7 @@ const tokenPrefix = "oncall_pat_"
 
 // apiVersion is the oncall API contract this provider was built against
 // (internal/server.apiVersion, mirrored here for the same no-shared-module
-// reason as tokenPrefix). Compared against GET /version's api_version.
+// reason as tokenPrefix). Compared against the BFF's GET /version api_version.
 const apiVersion = "v1"
 
 const (
@@ -218,13 +218,16 @@ type oncallVersion struct {
 	APIVersion string `json:"api_version"`
 }
 
-// checkOncallVersion calls the unauthenticated GET /version endpoint (mounted
-// next to /healthz, outside machineAPIPath's /api/v1) and fails Configure with
-// a clear diagnostic if oncall's api_version doesn't match apiVersion. oncall
-// installs old enough to predate /version itself get a 404, translated below
-// into a specific "upgrade oncall" message rather than a bare parse error.
+// checkOncallVersion calls the unauthenticated GET /version endpoint and fails
+// Configure with a clear diagnostic if oncall's api_version doesn't match
+// apiVersion. The endpoint is served by the public BFF directly at the site
+// root (cmd/oncall/main.go), next to /healthz and outside the /m2m machine
+// mount — so it's reached by stripping machineAPIPath off baseURL, not by
+// going through /m2m. oncall installs old enough to predate /version itself
+// get a 404, translated below into a specific "upgrade oncall" message rather
+// than a bare parse error.
 func checkOncallVersion(ctx context.Context, httpClient *http.Client, baseURL string, resp *provider.ConfigureResponse) {
-	versionURL := strings.TrimSuffix(baseURL, machineAPIPath) + "/m2m/version"
+	versionURL := strings.TrimSuffix(baseURL, machineAPIPath) + "/version"
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionURL, http.NoBody)
 	if err != nil {
