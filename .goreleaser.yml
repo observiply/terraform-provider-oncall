@@ -3,8 +3,9 @@
 # file exists to satisfy: standard platform matrix, SHA256SUMS, and zip
 # archive naming the registry's protocol expects.
 #
-# TODO: discuss artifact signing before the first real release — the
-# `signs:` block below is commented out pending that decision.
+# Artifacts are GPG-signed (the `signs:` block below) — observiply owns and
+# supplies the key. The Registry verifies the SHA256SUMS signature against the
+# public key registered on the namespace.
 #
 # Release workflow (.github/workflows/release.yml) invokes this via
 # goreleaser/goreleaser-action.
@@ -47,21 +48,20 @@ checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
   algorithm: sha256
 
-# TODO: discuss GPG signing before publishing to the Terraform Registry —
-# who owns the key, how it's rotated, whether we sign at all. Commented out
-# until that's decided.
-# signs:
-#   - artifacts: checksum
-#     args:
-#       # goreleaser passes --output/${signature}, --detach-sign, etc. by
-#       # default; this matches the registry's documented gpg invocation.
-#       - "--batch"
-#       - "--local-user"
-#       - "{{ .Env.GPG_FINGERPRINT }}"
-#       - "--output"
-#       - "${signature}"
-#       - "--detach-sign"
-#       - "${artifact}"
+# The Terraform Registry only needs the checksum file signed; it verifies
+# every archive through SHA256SUMS.
+signs:
+  - artifacts: checksum
+    args:
+      # goreleaser passes --output/${signature}, --detach-sign, etc. by
+      # default; this matches the registry's documented gpg invocation.
+      - "--batch"
+      - "--local-user"
+      - "{{ .Env.GPG_FINGERPRINT }}"
+      - "--output"
+      - "${signature}"
+      - "--detach-sign"
+      - "${artifact}"
 
 release:
   extra_files:

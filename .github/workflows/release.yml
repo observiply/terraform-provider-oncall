@@ -24,19 +24,19 @@ jobs:
         with:
           go-version-file: go.mod
 
-      # TODO: discuss GPG signing before publishing to the Terraform Registry
-      # — who owns the key and how it's rotated. Commented out with the
-      # `signs:` block in .goreleaser.yml until that's decided.
-      # - name: Import GPG key
-      #   uses: crazy-max/ghaction-import-gpg@v6
-      #   id: import_gpg
-      #   with:
-      #     gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-      #     passphrase: ${{ secrets.PASSPHRASE }}
+      # observiply owns the signing key. GPG_PRIVATE_KEY / PASSPHRASE are repo
+      # secrets; the matching public key is registered on the Registry
+      # namespace so it can verify the SHA256SUMS signature.
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        id: import_gpg
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
 
       - uses: goreleaser/goreleaser-action@v6
         with:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
