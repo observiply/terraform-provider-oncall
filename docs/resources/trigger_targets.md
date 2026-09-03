@@ -20,8 +20,8 @@ The API tracks position independently within each on_event group and always list
 # independently per on_event and always lists targets grouped as fired, then
 # state_change, then webhook — so list blocks in that same grouped order to
 # avoid a reorder diff after the first apply.
-resource "oncall_trigger_targets" "api_alerts" {
-  trigger_id = oncall_trigger.api_alerts.id
+resource "oncall_trigger_targets" "api_trigger" {
+  trigger_id = oncall_trigger.api_trigger.id
 
   target {
     target_type = "schedule"
@@ -88,5 +88,5 @@ Import is supported using the following syntax:
 The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
-terraform import oncall_trigger_targets.api_alerts <trigger-uuid>
+terraform import oncall_trigger_targets.api_trigger <trigger-uuid>
 ```

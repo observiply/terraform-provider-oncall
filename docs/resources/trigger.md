@@ -13,7 +13,7 @@ Manages an oncall trigger, an ingest endpoint that raises incidents. See oncall_
 ## Example Usage
 
 ```terraform
-resource "oncall_trigger" "api_alerts" {
+resource "oncall_trigger" "api_trigger" {
   name          = "API alerts"
   description   = "Ingest endpoint for the API service's alertmanager"
   owner_team_id = data.oncall_team.platform.id
@@ -27,12 +27,12 @@ resource "oncall_trigger" "api_alerts" {
   EOT
 }
 
-output "api_alerts_ingest_url" {
-  value = oncall_trigger.api_alerts.ingest_url
+output "api_trigger_ingest_url" {
+  value = oncall_trigger.api_trigger.ingest_url
 }
 
-output "api_alerts_token" {
-  value     = oncall_trigger.api_alerts.token
+output "api_trigger_token" {
+  value     = oncall_trigger.api_trigger.token
   sensitive = true
 }
 ```
@@ -81,5 +81,5 @@ Import is supported using the following syntax:
 The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
 
 ```shell
-terraform import oncall_trigger.api_alerts <trigger-uuid>
+terraform import oncall_trigger.api_trigger <trigger-uuid>
 ```

@@ -2,8 +2,8 @@
 # independently per on_event and always lists targets grouped as fired, then
 # state_change, then webhook — so list blocks in that same grouped order to
 # avoid a reorder diff after the first apply.
-resource "oncall_trigger_targets" "api_alerts" {
-  trigger_id = oncall_trigger.api_alerts.id
+resource "oncall_trigger_targets" "api_trigger" {
+  trigger_id = oncall_trigger.api_trigger.id
 
   target {
     target_type = "schedule"

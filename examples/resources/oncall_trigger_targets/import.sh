@@ -1,1 +1,1 @@
-terraform import oncall_trigger_targets.api_alerts <trigger-uuid>
+terraform import oncall_trigger_targets.api_trigger <trigger-uuid>

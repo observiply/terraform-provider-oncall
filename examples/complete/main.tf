@@ -130,7 +130,7 @@ resource "oncall_integration" "webhook" {
 
 # --- Trigger, routed to the schedule and the integration -------------------
 
-resource "oncall_trigger" "api_alerts" {
+resource "oncall_trigger" "api_trigger" {
   name          = "API alerts"
   description   = "Ingest endpoint for the API service's alertmanager"
   owner_team_id = data.oncall_team.platform.id
@@ -145,8 +145,8 @@ resource "oncall_trigger" "api_alerts" {
   EOT
 }
 
-resource "oncall_trigger_targets" "api_alerts" {
-  trigger_id = oncall_trigger.api_alerts.id
+resource "oncall_trigger_targets" "api_trigger" {
+  trigger_id = oncall_trigger.api_trigger.id
 
   # List blocks in fired, then state_change, then webhook order — the API
   # always returns them grouped that way, so matching it here avoids a
@@ -163,11 +163,11 @@ resource "oncall_trigger_targets" "api_alerts" {
   }
 }
 
-output "api_alerts_ingest_url" {
-  value = oncall_trigger.api_alerts.ingest_url
+output "api_trigger_ingest_url" {
+  value = oncall_trigger.api_trigger.ingest_url
 }
 
-output "api_alerts_token" {
-  value     = oncall_trigger.api_alerts.token
+output "api_trigger_token" {
+  value     = oncall_trigger.api_trigger.token
   sensitive = true
 }

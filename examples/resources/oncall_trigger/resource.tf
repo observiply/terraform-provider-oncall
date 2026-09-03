@@ -1,4 +1,4 @@
-resource "oncall_trigger" "api_alerts" {
+resource "oncall_trigger" "api_trigger" {
   name          = "API alerts"
   description   = "Ingest endpoint for the API service's alertmanager"
   owner_team_id = data.oncall_team.platform.id
@@ -12,11 +12,11 @@ resource "oncall_trigger" "api_alerts" {
   EOT
 }
 
-output "api_alerts_ingest_url" {
-  value = oncall_trigger.api_alerts.ingest_url
+output "api_trigger_ingest_url" {
+  value = oncall_trigger.api_trigger.ingest_url
 }
 
-output "api_alerts_token" {
-  value     = oncall_trigger.api_alerts.token
+output "api_trigger_token" {
+  value     = oncall_trigger.api_trigger.token
   sensitive = true
 }
