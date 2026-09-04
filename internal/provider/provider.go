@@ -77,20 +77,17 @@ func (p *OncallProvider) Metadata(_ context.Context, _ provider.MetadataRequest,
 
 func (p *OncallProvider) Schema(_ context.Context, _ provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "Manages oncall schedules, layers, triggers, and integrations. " +
-			"Credentials are an oncall-issued API token (oncall_pat_...), not an authentik " +
-			"identity of the provider's own.",
+		Description: "Manages Oncall schedules, layers, triggers, and integrations by a " +
+			"user-generated API token created in Oncall and scoped by the RBAC of the requestor.",
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
-				Optional: true,
-				Description: "Base URL of the oncall deployment, e.g. https://oncall.example.com. " +
-					"Do not include /m2m/api/v1 — the provider appends it. May also be set via the " +
-					"ONCALL_ENDPOINT environment variable.",
+				Optional:    true,
+				Description: "Base URL of the Oncall deployment. May also be set via the `ONCALL_ENDPOINT` environment variable.",
 			},
 			"token": schema.StringAttribute{
 				Optional:    true,
 				Sensitive:   true,
-				Description: "oncall API token (oncall_pat_...). May also be set via the ONCALL_TOKEN environment variable. Prefer the env var over committing a token in .tf files.",
+				Description: "Oncall API token. May also be set via the `ONCALL_TOKEN` environment variable.",
 			},
 		},
 	}
